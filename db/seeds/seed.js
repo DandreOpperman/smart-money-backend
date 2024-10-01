@@ -23,7 +23,7 @@ const seed = ({ userData, monthlyExpenseData, transactionData, tagData }) => {
         fname VARCHAR(40) NOT NULL,
         income FLOAT DEFAULT 0,
         savings_target FLOAT DEFAULT 0,
-        created_at DATE DEFAULT NOW()
+        created_at TIMESTAMPTZ DEFAULT NOW()
       );`);
       // user_id	        email	        password	        fname	            income	        savings_goal	date_joined
       // SERIAL PRIMARY KEY	varchar, not null	varchar, not null	varchar, not null	int, not null	int, not null	DATE, not null
@@ -45,7 +45,7 @@ const seed = ({ userData, monthlyExpenseData, transactionData, tagData }) => {
         transaction_id SERIAL PRIMARY KEY,
         expense_name VARCHAR(40) NOT NULL,
         cost FLOAT NOT NULL,
-        created_at DATE DEFAULT NOW(),
+        created_at TIMESTAMPTZ DEFAULT NOW(),
         description VARCHAR(500),
         user_id INT REFERENCES users(user_id) NOT NULL
       );`);

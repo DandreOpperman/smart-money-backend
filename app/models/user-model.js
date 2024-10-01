@@ -1,4 +1,5 @@
 const db = require("../../db/connection");
+const { checkEmail, checkValueExists } = require("../../db/utils");
 
 exports.selectUser = (user_id) => {
   const queryPromises = [];
@@ -55,26 +56,34 @@ exports.selectUser = (user_id) => {
 exports.insertUser = ({ email, password, fname }) => {
   const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
   const passRegex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[@$!%*?&])[A-Za-zd@$!%*?&]{8,}$/;
-  if (!emailRegex.test(email) || !passRegex.test(password)) {
-    console.log(email, password, "is invalid");
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  const nameRegex = /^[A-Za-z]+([ -][A-Za-z]+)?$/;
+  if (
+    !emailRegex.test(email) ||
+    !passRegex.test(password) ||
+    !nameRegex.test(fname)
+  ) {
     return Promise.reject({ status: 400, msg: "BAD REQUEST" });
   }
-  return db
-    .query(
-      `
+  return checkValueExists("users", "email", email)
+    .catch(() => {
+      return db.query(
+        `
     INSERT INTO users
       (email, password, fname)
     VALUES
       ($1, $2, $3)
     RETURNING *;
     `,
-      [email, password, fname]
-    )
-    .then(({ rows: [user] }) => {
+        [email, password, fname]
+      );
+    })
+    .then((result) => {
+      if (!result) {
+        return Promise.reject({ status: 409, msg: "EMAIL TAKEN" });
+      }
+      const user = result.rows[0];
       user.disposable_spend = user.mandatory_spend = 0.0;
       return user;
     });
 };
-
-//ADD VALIDATION FOR DUPLICATE USERNAME
