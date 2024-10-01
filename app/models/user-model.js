@@ -42,9 +42,39 @@ exports.selectUser = (user_id) => {
         rows: [{ disposable_spend }],
       },
     ]) => {
+      if (!user) {
+        return Promise.reject({ status: 404, msg: "NOT FOUND" });
+      }
       user.mandatory_spend = mandatory_spend;
       user.disposable_spend = disposable_spend;
       return user;
     }
   );
 };
+
+exports.insertUser = ({ email, password, fname }) => {
+  const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+  const passRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[@$!%*?&])[A-Za-zd@$!%*?&]{8,}$/;
+  if (!emailRegex.test(email) || !passRegex.test(password)) {
+    console.log(email, password, "is invalid");
+    return Promise.reject({ status: 400, msg: "BAD REQUEST" });
+  }
+  return db
+    .query(
+      `
+    INSERT INTO users
+      (email, password, fname)
+    VALUES
+      ($1, $2, $3)
+    RETURNING *;
+    `,
+      [email, password, fname]
+    )
+    .then(({ rows: [user] }) => {
+      user.disposable_spend = user.mandatory_spend = 0.0;
+      return user;
+    });
+};
+
+//ADD VALIDATION FOR DUPLICATE USERNAME

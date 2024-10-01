@@ -39,7 +39,7 @@ describe("/api/user/:user_id", () => {
       .expect(200)
       .then(({ body: { user } }) => {
         expect(user).toMatchObject({
-          username: "jimmy4000",
+          email: "jimmy4000@gmail.com",
           password: expect.any(String),
           fname: "Jimmy",
           income: expect.any(Number),
@@ -49,5 +49,127 @@ describe("/api/user/:user_id", () => {
           created_at: expect.any(String),
         });
       });
+  });
+  it("GET:404 sends an appropriate status and error message when given a valid but non-existent id", () => {
+    return request(app)
+      .get("/api/user/999")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("NOT FOUND");
+      });
+  });
+  it("GET:400 sends an appropriate status and error message when given an invalid id", () => {
+    return request(app)
+      .get("/api/user/jhvkjhbkh")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+});
+
+describe("/api/user", () => {
+  it("POST:201 responds with the newly created user", () => {
+    const requestBody = {
+      email: "markimoo55@gmail.com",
+      password: "Jwisper5$",
+      fname: "Mark",
+    };
+    return request(app)
+      .post("/api/user")
+      .expect(201)
+      .send(requestBody)
+      .then(({ body: { user } }) => {
+        expect(user).toMatchObject({
+          user_id: 4,
+          email: "markimoo55@gmail.com",
+          password: "Jwisper5$",
+          fname: "Mark",
+          income: 0,
+          savings_target: 0,
+          mandatory_spend: 0,
+          disposable_spend: 0,
+          created_at: expect.any(String),
+        });
+      });
+  });
+  it("POST:400 responds with appropriate error message if bad request body", () => {
+    const requestBody = {
+      email: "marki55@gmail.com",
+      fname: "Marko",
+    };
+    return request(app)
+      .post("/api/user")
+      .expect(400)
+      .send(requestBody)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+  it("POST:201 ignores unnecessary properties on the request body", () => {
+    const requestBody = {
+      email: "marki55@gmail.com",
+      password: "Jwisper5$",
+      fname: "Marko",
+      banana: true,
+      giveMoney: "yes",
+      income: 10000000000,
+    };
+    return request(app)
+      .post("/api/user")
+      .expect(201)
+      .send(requestBody)
+      .then(({ body: { user } }) => {
+        expect(user).toMatchObject({
+          user_id: 4,
+          email: "marki55@gmail.com",
+          password: "Jwisper5$",
+          fname: "Marko",
+          income: 0,
+          savings_target: 0,
+          mandatory_spend: 0,
+          disposable_spend: 0,
+          created_at: expect.any(String),
+        });
+      });
+  });
+  it("POST:400 responds with appropriate error message if values do not satisfy validation regex", () => {
+    const invalidEmail = {
+      email: 333,
+      password: "Pa5$word",
+      fname: "Mark",
+    };
+    const invalidPass = {
+      email: "markimoo55@gmail.com",
+      password: "password123",
+      fname: "Mark",
+    };
+    const invalidName = {
+      email: "markimoo55@gmail.com",
+      password: "Pa5$word",
+      fname: "$$$",
+    };
+    const emailTest = request(app)
+      .post("/api/user")
+      .expect(400)
+      .send(invalidEmail)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+    const passTest = request(app)
+      .post("/api/user")
+      .expect(400)
+      .send(invalidPass)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+    const nameTest = request(app)
+      .post("/api/user")
+      .expect(400)
+      .send(invalidName)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+    return Promise.all([emailTest, nameTest, passTest]);
   });
 });
