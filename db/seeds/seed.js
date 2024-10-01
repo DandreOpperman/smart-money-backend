@@ -18,14 +18,14 @@ const seed = ({ userData, monthlyExpenseData, transactionData, tagData }) => {
       return db.query(`
       CREATE TABLE users (
         user_id SERIAL PRIMARY KEY,
-        username VARCHAR(40) NOT NULL,
+        email VARCHAR(40) NOT NULL,
         password VARCHAR(40) NOT NULL,
         fname VARCHAR(40) NOT NULL,
-        income INT NOT NULL,
-        savings_target INT NOT NULL,
-        created_at DATE NOT NULL
+        income FLOAT DEFAULT 0,
+        savings_target FLOAT DEFAULT 0,
+        created_at DATE DEFAULT NOW()
       );`);
-      // user_id	        username	        password	        fname	            income	        savings_goal	date_joined
+      // user_id	        email	        password	        fname	            income	        savings_goal	date_joined
       // SERIAL PRIMARY KEY	varchar, not null	varchar, not null	varchar, not null	int, not null	int, not null	DATE, not null
     })
     .then(() => {
@@ -45,7 +45,7 @@ const seed = ({ userData, monthlyExpenseData, transactionData, tagData }) => {
         transaction_id SERIAL PRIMARY KEY,
         expense_name VARCHAR(40) NOT NULL,
         cost FLOAT NOT NULL,
-        created_at DATE NOT NULL,
+        created_at DATE DEFAULT NOW(),
         description VARCHAR(500),
         user_id INT REFERENCES users(user_id) NOT NULL
       );`);
@@ -61,19 +61,33 @@ const seed = ({ userData, monthlyExpenseData, transactionData, tagData }) => {
     .then(() => {
       const formattedUserData = userData.map(convertTimestampToDate);
       const insertUsersQueryStr = format(
-        "INSERT INTO users (username, password, fname, income, savings_target, created_at) VALUES %L;",
+        "INSERT INTO users (email, password, fname, income, savings_target, created_at) VALUES %L;",
         formattedUserData.map(
-          ({
-            username,
+          ({ email, password, fname, income, savings_target, created_at }) => [
+            email,
             password,
             fname,
             income,
             savings_target,
             created_at,
-          }) => [username, password, fname, income, savings_target, created_at]
+          ]
         )
       );
       return db.query(insertUsersQueryStr);
+    })
+    .then(() => {
+      return db.query(`
+      UPDATE users
+      SET income = 0, savings_target = 0
+      WHERE income IS NULL OR savings_target IS NULL;
+      `);
+    })
+    .then(() => {
+      return db.query(`
+      UPDATE users
+      SET created_at = NOW()
+      WHERE created_at IS NULL;
+      `);
     })
     .then(() => {
       const insertMonthlyExpensesQueryStr = format(

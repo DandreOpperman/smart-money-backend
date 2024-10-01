@@ -1,8 +1,8 @@
 module.exports = [
   {
     //user_id: 1, <-- SERIAL
-    username: "jimmy4000",
-    password: "iamricherthanu",
+    email: "jimmy4000@gmail.com",
+    password: "I@mrich3rthanu",
     fname: "Jimmy",
     income: 4000, //monthly
     savings_target: 2000, //monthly
@@ -12,11 +12,17 @@ module.exports = [
   },
   {
     //user_id: 2, <-- SERIAL
-    username: "JohnSmith",
-    password: "insecurepassword1234",
+    email: "JohnSmith@gmail.com",
+    password: "johnSMITH123@",
     fname: "mhhhm",
     income: 2100,
     savings_target: 800,
     created_at: 1727688999999,
+  },
+  {
+    //user_id: 3, <-- SERIAL
+    email: "glencoco99@gmail.com",
+    password: "youGOg!3nCOCO",
+    fname: "Glenjamin",
   },
 ];

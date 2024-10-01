@@ -23,17 +23,15 @@
     "request-body": {
       "username": "JohnSmith",
       "password": "iamofhumbleorigin",
-      "fname": "Jonathan",
-      "income": 2100,
-      "savings_target": 800
+      "fname": "Jonathan"
     },
     "exampleResponse": {
       "user": {
         "username": "JohnSmith",
         "password": "iamofhumbleorigin",
         "fname": "Jonathan",
-        "income": 2100,
-        "savings_target": 800,
+        "income": 0,
+        "savings_target": 0,
         "mandatory_spend": 0,
         "disposable_spend": 0,
         "created_at": "2024-09-30T09:33:56.086Z"

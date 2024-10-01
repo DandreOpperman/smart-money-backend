@@ -1,5 +1,7 @@
 const userRouter = require("express").Router();
-const { getUser } = require("../controllers/user-controller");
+const { getUser, postUser } = require("../controllers/user-controller");
+
+userRouter.post("/", postUser);
 
 userRouter.get("/:user_id", getUser);
 
