@@ -7,8 +7,8 @@
     "queries": [],
     "exampleResponse": {
       "user": {
-        "username": "jimmy4000",
-        "password": "iamricherthanu",
+        "email": "jimmy4000@gmail.com",
+        "password": "I@mrich3rthanu",
         "fname": "Jimmy",
         "income": 4000,
         "savings_target": 2000,
@@ -21,14 +21,14 @@
   "POST /api/user/": {
     "description": "allows for the creation of a new user",
     "request-body": {
-      "username": "JohnSmith",
-      "password": "iamofhumbleorigin",
+      "email": "JohnSmith@gmail.com",
+      "password": "johnSMITH123@",
       "fname": "Jonathan"
     },
     "exampleResponse": {
       "user": {
-        "username": "JohnSmith",
-        "password": "iamofhumbleorigin",
+        "email": "JohnSmith@gmail.com",
+        "password": "johnSMITH123@",
         "fname": "Jonathan",
         "income": 0,
         "savings_target": 0,
@@ -44,8 +44,8 @@
     "request-body": { "income": 3500, "fname": "Jimothy" },
     "exampleResponse": {
       "user": {
-        "username": "jimmy4000",
-        "password": "iamricherthanu",
+        "email": "jimmy4000@gmail.com",
+        "password": "I@mrich3rthanu",
         "fname": "Jimothy",
         "income": 3500,
         "savings_target": 2000,
@@ -59,5 +59,17 @@
     "description": "allows for the deletion of the user data",
     "queries": [],
     "exampleResponse": { "status": 204 }
+  },
+  "GET /api/expenses/:user_id": {
+    "description": "returns a list of the user's monthly expenses",
+    "queries": [],
+    "exampleResponse": [
+      { "monthly_expense_id": 1, "expense_name": "rent", "cost": 300 },
+      { "monthly_expense_id": 2, "expense_name": "utilities", "cost": 200 },
+      { "monthly_expense_id": 3, "expense_name": "travel", "cost": 150 },
+      { "monthly_expense_id": 4, "expense_name": "food", "cost": 200 },
+      { "monthly_expense_id": 5, "expense_name": "subscriptions", "cost": 80 },
+      { "monthly_expense_id": 6, "expense_name": "charity", "cost": 70 }
+    ]
   }
 }
