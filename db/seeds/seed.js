@@ -1,6 +1,6 @@
-const format = require('pg-format');
-const db = require('../connection');
-// const { convertTimestampToDate } = require('../utils');
+const format = require("pg-format");
+const db = require("../connection");
+const { convertTimestampToDate } = require("../utils");
 
 const seed = ({ userData, monthlyExpenseData, transactionData, tagData }) => {
   return db
@@ -22,8 +22,8 @@ const seed = ({ userData, monthlyExpenseData, transactionData, tagData }) => {
         password VARCHAR(40) NOT NULL,
         fname VARCHAR(40) NOT NULL,
         income INT NOT NULL,
-        savings_goal INT NOT NULL,
-        date_joined DATE NOT NULL
+        savings_target INT NOT NULL,
+        created_at DATE NOT NULL
       );`);
       // user_id	        username	        password	        fname	            income	        savings_goal	date_joined
       // SERIAL PRIMARY KEY	varchar, not null	varchar, not null	varchar, not null	int, not null	int, not null	DATE, not null
@@ -45,7 +45,7 @@ const seed = ({ userData, monthlyExpenseData, transactionData, tagData }) => {
         transaction_id SERIAL PRIMARY KEY,
         expense_name VARCHAR(40) NOT NULL,
         cost FLOAT NOT NULL,
-        date DATE NOT NULL,
+        created_at DATE NOT NULL,
         description VARCHAR(500),
         user_id INT REFERENCES users(user_id) NOT NULL
       );`);
@@ -57,6 +57,62 @@ const seed = ({ userData, monthlyExpenseData, transactionData, tagData }) => {
         tag_name VARCHAR(40),
         transaction_id INT REFERENCES transactions(transaction_id) NOT NULL
       );`);
+    })
+    .then(() => {
+      const formattedUserData = userData.map(convertTimestampToDate);
+      const insertUsersQueryStr = format(
+        "INSERT INTO users (username, password, fname, income, savings_target, created_at) VALUES %L;",
+        formattedUserData.map(
+          ({
+            username,
+            password,
+            fname,
+            income,
+            savings_target,
+            created_at,
+          }) => [username, password, fname, income, savings_target, created_at]
+        )
+      );
+      return db.query(insertUsersQueryStr);
+    })
+    .then(() => {
+      const insertMonthlyExpensesQueryStr = format(
+        "INSERT INTO monthly_expenses (user_id, expense_name, cost) VALUES %L;",
+        monthlyExpenseData.map(({ user_id, expense_name, cost }) => [
+          user_id,
+          expense_name,
+          cost,
+        ])
+      );
+      return db.query(insertMonthlyExpensesQueryStr);
+    })
+    .then(() => {
+      const formattedTransactionData = transactionData.map(
+        convertTimestampToDate
+      );
+      const insertTransactionQueryStr = format(
+        "INSERT INTO transactions (user_id, expense_name, cost, created_at, description) VALUES %L;",
+        formattedTransactionData.map(
+          ({ user_id, expense_name, cost, created_at, description }) => [
+            user_id,
+            expense_name,
+            cost,
+            created_at,
+            description,
+          ]
+        )
+      );
+      return db.query(insertTransactionQueryStr);
+    })
+    .then(() => {
+      const insertTransactionsTagsQueryStr = format(
+        "INSERT INTO transactions_tags (transaction_id, tag_name) VALUES %L;",
+        tagData.map(({ transaction_id, tag_name }) => [
+          transaction_id,
+          tag_name,
+        ])
+      );
+      return db.query(insertTransactionsTagsQueryStr);
     });
 };
 
