@@ -172,4 +172,18 @@ describe("/api/user", () => {
       });
     return Promise.all([emailTest, nameTest, passTest]);
   });
+  it("POST:409 responds with an appropriate message if email is already taken", () => {
+    const requestBody = {
+      email: "jimmy4000@gmail.com",
+      password: "Jwisper5$",
+      fname: "josh",
+    };
+    return request(app)
+      .post("/api/user")
+      .expect(409)
+      .send(requestBody)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("EMAIL TAKEN");
+      });
+  });
 });
