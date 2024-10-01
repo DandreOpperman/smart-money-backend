@@ -105,10 +105,71 @@ describe("/api/user/:user_id", () => {
         }
       );
   });
-  it.skip("PATCH:400 reponds with bad request if email, password or name are invalid", () => {
+  it("PATCH:400 responds with bad request if email, password or name are invalid", () => {
     const badEmail = { email: "notanemailaddress.net" };
     const badPass = { password: 123 };
     const badName = { fname: '%%^%£"£$%^$' };
+    const emailTest = request(app)
+      .patch("/api/user/2")
+      .expect(400)
+      .send(badEmail)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+    const passTest = request(app)
+      .patch("/api/user/2")
+      .expect(400)
+      .send(badPass)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+    const nameTest = request(app)
+      .patch("/api/user/2")
+      .expect(400)
+      .send(badName)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+    return Promise.all([emailTest, passTest, nameTest]);
+  });
+  it("PATCH:400 responds with bad request when passed multiple invalid values", () => {
+    const requestBody = {
+      email: "notanemailaddress.net",
+      password: "fsdfsf",
+      name: 12345,
+    };
+    return request(app)
+      .patch("/api/user/2")
+      .expect(400)
+      .send(requestBody)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+  it("PATCH:400 responds with bad request when passed an invalid property", () => {
+    const requestBody = {
+      shoeSize: 9,
+      email: "shoeKing@outlook.com",
+    };
+    return request(app)
+      .patch("/api/user/2")
+      .expect(400)
+      .send(requestBody)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+  it("PATCH:404 responds with not found when passed a non existent user_id", () => {
+    const requestBody = {
+      email: "shoeKing@outlook.com",
+    };
+    return request(app)
+      .patch("/api/user/9999")
+      .expect(404)
+      .send(requestBody)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("NOT FOUND");
+      });
   });
   it("DELETE:204 deletes the specified user", () => {
     return request(app)

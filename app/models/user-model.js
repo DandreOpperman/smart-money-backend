@@ -91,6 +91,14 @@ exports.insertUser = ({ email, password, fname }) => {
 exports.updateUser = (user_id, patchBody) => {
   const queryProms = [];
   const queryParams = [];
+  const allowedColumns = [
+    "email",
+    "password",
+    "avatar_url",
+    "fname",
+    "income",
+    "savings_target",
+  ];
   if (Object.keys(patchBody).includes("email")) {
     const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
     if (!emailRegex.test(patchBody.email)) {
@@ -114,6 +122,9 @@ exports.updateUser = (user_id, patchBody) => {
   let queryStr = "UPDATE users SET ";
 
   for (const key in patchBody) {
+    if (!allowedColumns.includes(key)) {
+      return Promise.reject({ status: 400, msg: "BAD REQUEST" });
+    }
     const value = patchBody[key];
     queryStr += `${key} = $${count + 1}`;
     queryParams.unshift(value);
