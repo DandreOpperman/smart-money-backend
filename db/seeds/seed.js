@@ -20,6 +20,7 @@ const seed = ({ userData, monthlyExpenseData, transactionData, tagData }) => {
         user_id SERIAL PRIMARY KEY,
         email VARCHAR(40) NOT NULL,
         password VARCHAR(40) NOT NULL,
+        avatar_url VARCHAR(150) DEFAULT 'https://cdn-icons-png.flaticon.com/512/6097/6097300.png',
         fname VARCHAR(40) NOT NULL,
         income FLOAT DEFAULT 0,
         savings_target FLOAT DEFAULT 0,

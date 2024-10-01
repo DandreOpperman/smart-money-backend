@@ -39,6 +39,7 @@ describe("/api/user/:user_id", () => {
       .expect(200)
       .then(({ body: { user } }) => {
         expect(user).toMatchObject({
+          user_id: expect.any(Number),
           email: "jimmy4000@gmail.com",
           password: expect.any(String),
           fname: "Jimmy",
@@ -61,6 +62,68 @@ describe("/api/user/:user_id", () => {
   it("GET:400 sends an appropriate status and error message when given an invalid id", () => {
     return request(app)
       .get("/api/user/jhvkjhbkh")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+  it("PATCH:201 responds with the edited user", () => {
+    const newEmail = { email: "whopper@gmail.com" };
+    return request(app)
+      .patch("/api/user/1")
+      .send(newEmail)
+      .expect(201)
+      .then(
+        ({
+          body: {
+            user: { email },
+          },
+        }) => {
+          expect(email).toBe("whopper@gmail.com");
+        }
+      );
+  });
+  it("PATCH:201 responds with the edited user when the patch request contains multiple values", () => {
+    const newEmail = {
+      email: "bigmac@gmail.com",
+      income: 9999,
+      password: "H0oD3ini£",
+    };
+    return request(app)
+      .patch("/api/user/1")
+      .send(newEmail)
+      .expect(201)
+      .then(
+        ({
+          body: {
+            user: { email, income, password },
+          },
+        }) => {
+          expect(email).toBe("bigmac@gmail.com");
+          expect(income).toBe(9999);
+          expect(password).toBe("H0oD3ini£");
+        }
+      );
+  });
+  it.skip("PATCH:400 reponds with bad request if email, password or name are invalid", () => {
+    const badEmail = { email: "notanemailaddress.net" };
+    const badPass = { password: 123 };
+    const badName = { fname: '%%^%£"£$%^$' };
+  });
+  it("DELETE:204 deletes the specified user", () => {
+    return request(app)
+      .delete("/api/user/3")
+      .expect(204)
+      .then(() => {
+        return request(app).get("/api/user/3").expect(404);
+      })
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("NOT FOUND");
+      });
+  });
+  it("DELETE:400 responds with bad request for an invalid user_id", () => {
+    return request(app)
+      .delete("/api/user/imnotarealuser")
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("BAD REQUEST");

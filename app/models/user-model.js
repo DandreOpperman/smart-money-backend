@@ -56,7 +56,7 @@ exports.selectUser = (user_id) => {
 exports.insertUser = ({ email, password, fname }) => {
   const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
   const passRegex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$£!%*?&])[A-Za-z\d@$£!%*?&]{8,}$/;
   const nameRegex = /^[A-Za-z]+([ -][A-Za-z]+)?$/;
   if (
     !emailRegex.test(email) ||
@@ -86,4 +86,64 @@ exports.insertUser = ({ email, password, fname }) => {
       user.disposable_spend = user.mandatory_spend = 0.0;
       return user;
     });
+};
+
+exports.updateUser = (user_id, patchBody) => {
+  const queryProms = [];
+  const queryParams = [];
+  if (Object.keys(patchBody).includes("email")) {
+    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+    if (!emailRegex.test(patchBody.email)) {
+      return Promise.reject({ status: 400, msg: "BAD REQUEST" });
+    }
+  }
+  if (Object.keys(patchBody).includes("password")) {
+    const passRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$£!%*?&])[A-Za-z\d@$£!%*?&]{8,}$/;
+    if (!passRegex.test(patchBody.password)) {
+      return Promise.reject({ status: 400, msg: "BAD REQUEST" });
+    }
+  }
+  if (Object.keys(patchBody).includes("fname")) {
+    const nameRegex = /^[A-Za-z]+([ -][A-Za-z]+)?$/;
+    if (!nameRegex.test(patchBody.fname)) {
+      return Promise.reject({ status: 400, msg: "BAD REQUEST" });
+    }
+  }
+  let count = Object.keys(patchBody).length;
+  let queryStr = "UPDATE users SET ";
+
+  for (const key in patchBody) {
+    const value = patchBody[key];
+    queryStr += `${key} = $${count + 1}`;
+    queryParams.unshift(value);
+    queryStr += count > 1 ? ", " : " ";
+    count--;
+  }
+
+  queryParams.unshift(user_id);
+
+  queryStr += `WHERE user_id = $1 RETURNING *;`;
+  queryProms.push(db.query(queryStr, queryParams));
+  queryProms.push(checkValueExists("users", "user_id", user_id));
+
+  return Promise.all(queryProms).then(
+    ([
+      {
+        rows: [user],
+      },
+    ]) => {
+      return user;
+    }
+  );
+};
+
+exports.removeUser = (user_id) => {
+  return db.query(
+    `
+    DELETE FROM users
+    WHERE user_id = $1;
+    `,
+    [user_id]
+  );
 };
