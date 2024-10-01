@@ -1,4 +1,8 @@
 {
+  "name": "smart-money-backend",
+  "version": "1.0.0",
+  "description": "smart-money-backend",
+  "main": "listen.js",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -15,6 +19,8 @@
     "test": "jest",
     "dev": "nodemon listen.js",
     "setup-dbs": "psql -f ./db/setup.sql",
-    "seed": "node ./db/seeds/run-seed.js"
+    "seed": "node ./db/seeds/run-seed.js",
+    "start": "node listen.js",
+    "seed-prod": "NODE_ENV=production npm run seed"
   }
 }
