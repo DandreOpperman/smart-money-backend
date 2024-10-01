@@ -7,16 +7,19 @@ exports.convertTimestampToDate = ({ created_at, ...otherProperties }) => {
 };
 
 exports.checkValueExists = (table_name, column_name, value) => {
-  const queryStr = format(
-    "SELECT * FROM %I WHERE %I = $1;",
-    table_name,
-    column_name
-  );
-  return db.query(queryStr, [value]).then(({ rows }) => {
+  queryParams = [column_name, table_name];
+  let queryStr = `SELECT %I FROM %I`;
+  if (value) {
+    queryStr += ` WHERE %I = $1`;
+    queryParams.push(column_name);
+  }
+  queryStr += ";";
+  const formattedQueryStr = format(queryStr, ...queryParams);
+  return db.query(formattedQueryStr, [value]).then(({ rows }) => {
     if (rows.length === 0) {
       return Promise.reject({
         status: 404,
-        msg: `${column_name.toUpperCase()} NOT FOUND`,
+        msg: `NOT FOUND`,
       });
     }
   });
