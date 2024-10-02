@@ -1,4 +1,4 @@
-const { selectGoals } = require("../models/goals-model");
+const { selectGoals, insertGoal } = require("../models/goals-model");
 
 exports.getGoals = (req, res, next) => {
   const { user_id } = req.params;
@@ -7,4 +7,16 @@ exports.getGoals = (req, res, next) => {
       res.status(200).send({ goals });
     })
     .catch((err) => next(err));
+};
+
+exports.postGoal = (req, res, next) => {
+  const { user_id } = req.params;
+  const requestBody = req.body;
+  insertGoal(requestBody, user_id)
+    .then((goal) => {
+      res.status(201).send({ goal });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };

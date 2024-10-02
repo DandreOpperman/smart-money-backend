@@ -16,3 +16,19 @@ exports.selectGoals = (user_id) => {
       return rows;
     });
 };
+
+exports.insertGoal = ({ name, cost, description, img_url }, user_id) => {
+  return db
+    .query(
+      `
+    INSERT INTO goals
+        (name, cost, description, img_url, user_id)
+    VALUES
+        ($1, $2, $3, $4, $5)
+    RETURNING *;`,
+      [name, cost, description, img_url, user_id]
+    )
+    .then(({ rows: [goal] }) => {
+      return goal;
+    });
+};
