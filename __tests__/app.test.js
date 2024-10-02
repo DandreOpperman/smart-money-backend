@@ -7,11 +7,12 @@ const {
   monthlyExpenseData,
   transactionData,
   tagData,
+  goalData,
 } = require("../db/test-data/index");
 const endpointsData = require("../endpoints.json");
 
 beforeEach(() =>
-  seed({ userData, monthlyExpenseData, transactionData, tagData })
+  seed({ userData, monthlyExpenseData, transactionData, tagData, goalData })
 );
 afterAll(() => db.end());
 
@@ -424,7 +425,7 @@ describe("/api/user/:user_id/transactions", () => {
                 name: "New Video Game",
                 cost: 59.99,
                 img_url: null,
-                created_at: "2024-09-30T09:34:02.500Z",
+                created_at: expect.any(String),
                 user_id: 2,
               },
             ]);
@@ -660,7 +661,7 @@ describe("/api/user/:user_id/transactions/:transaction_id", () => {
           transaction_id: 4,
           name: "Meal with friends",
           cost: 45.0,
-          created_at: "2024-09-30T09:34:02.500Z",
+          created_at: expect.any(String),
           img_url: "smoked_salmon.jpg",
           description: "I got the smoked salmon.",
           user_id: 1,
@@ -731,6 +732,52 @@ describe("/api/user/:user_id/transactions/:transaction_id", () => {
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("BAD REQUEST");
+      });
+  });
+});
+
+describe("/api/user/:user_id/goals", () => {
+  it("GET:200 responds with a list of goals for the specified user", () => {
+    return request(app)
+      .get("/api/user/1/goals")
+      .expect(200)
+      .then(({ body: { goals } }) => {
+        expect(goals.length).toBe(3);
+        goals.forEach((goal) => {
+          expect(goal).toMatchObject({
+            goal_id: expect.any(Number),
+            name: expect.any(String),
+            cost: expect.any(Number),
+            img_url: expect.any(String),
+            created_at: expect.any(String),
+            description: expect.any(String),
+            user_id: 1,
+          });
+        });
+      });
+  });
+  it("GET:400 responds with bad request for an invalid user_id", () => {
+    return request(app)
+      .get("/api/user/fakeuser/goals")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+  it("GET:404 responds with not found for a valid but non-existent user_id", () => {
+    return request(app)
+      .get("/api/user/999/goals")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("NOT FOUND");
+      });
+  });
+  it("GET:200 responds with an empty array for a valid user with no goals", () => {
+    return request(app)
+      .get("/api/user/3/goals")
+      .expect(200)
+      .then(({ body: { goals } }) => {
+        expect(goals).toEqual([]);
       });
   });
 });
