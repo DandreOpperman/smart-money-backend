@@ -1,20 +1,22 @@
 module.exports = [
   {
     user_id: 1,
-    expense_name: "Wall St. Journal",
+    name: "Wall St. Journal",
     cost: 3.99,
+    img_url:
+      "https://www.washingtonpost.com/wp-apps/imrs.php?src=https://arc-anglerfish-washpost-prod-washpost.s3.amazonaws.com/public/MJKQU2PDDLLYUK4PND234F32O4.jpg&w=1200",
     created_at: 1727688836086,
     description: "A very important magazine for my career development.",
   },
   {
     user_id: 1,
-    expense_name: "Glacier Freeze Vape",
+    name: "Glacier Freeze Vape",
     cost: 13.99,
     created_at: 1727688840000,
   },
   {
     user_id: 1,
-    expense_name: "Gucci Socks",
+    name: "Gucci Socks",
     cost: 453.83,
     created_at: 1727688840999,
     description:
@@ -22,7 +24,7 @@ module.exports = [
   },
   {
     user_id: 1,
-    expense_name: "Meal with friends",
+    name: "Meal with friends",
     cost: 39.5,
     created_at: 1727688842500,
     description: "I got the smoked salmon.",
