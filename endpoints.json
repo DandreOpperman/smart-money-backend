@@ -123,5 +123,15 @@
         "user_id": 1
       }
     ]
+  },
+  "DELETE /api/user/:user_id/transactions": {
+    "description": "delete ALL transactions belonging to a specified user",
+    "queries": [],
+    "exampleResponse": [{ "status": 204 }]
+  },
+  "DELETE /api/user/:user_id/transactions/:transaction_id": {
+    "description": "delete a single transaction",
+    "queries": [],
+    "exampleResponse": [{ "status": 204 }]
   }
 }
