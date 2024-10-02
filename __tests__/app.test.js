@@ -471,7 +471,6 @@ describe("/api/user/:user_id/transactions", () => {
       .send(requestBody)
       .expect(201)
       .then(({ body: { transaction } }) => {
-        console.log(transaction);
         expect(transaction).toMatchObject({
           transaction_id: expect.any(Number),
           name: "Boba",
@@ -582,6 +581,93 @@ describe("/api/user/:user_id/transactions/:transaction_id", () => {
   it("DELETE:400 should not delete a transaction if it does not belong to the specified user_id", () => {
     return request(app)
       .delete("/api/user/3/transactions/1")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+  it("PATCH:200 updates existing properties on a transaction", () => {
+    const requestBody = {
+      img_url: "smoked_salmon.jpg",
+      cost: 45.0,
+    };
+    return request(app)
+      .patch("/api/user/1/transactions/4")
+      .send(requestBody)
+      .expect(200)
+      .then(({ body: { transaction } }) => {
+        expect(transaction).toMatchObject({
+          transaction_id: 4,
+          name: "Meal with friends",
+          cost: 45.0,
+          created_at: "2024-09-30T09:34:02.500Z",
+          img_url: "smoked_salmon.jpg",
+          description: "I got the smoked salmon.",
+          user_id: 1,
+        });
+      });
+  });
+  it("PATCH:400 responds with bad request if request property is not greenlisted", () => {
+    const requestBody = {
+      img_url: "smoked_salmon.jpg",
+      cost: 45.0,
+      user_id: 5,
+    };
+    return request(app)
+      .patch("/api/user/1/transactions/4")
+      .send(requestBody)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+  it("PATCH:400 responds with bad request if user/transaction id is invalid", () => {
+    const requestBody = {
+      description: "test description",
+    };
+    const badUserID = request(app)
+      .patch("/api/user/--/transactions/4")
+      .send(requestBody)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+    const badTransactionID = request(app)
+      .patch("/api/user/1/transactions/--")
+      .send(requestBody)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+    return Promise.all([badUserID, badTransactionID]);
+  });
+  it("PATCH:404 responds with not found if user/transaction id does not exist", () => {
+    const requestBody = {
+      cost: 57.49,
+    };
+    const notFoundTransaction = request(app)
+      .patch("/api/user/1/transactions/999")
+      .send(requestBody)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("NOT FOUND");
+      });
+    const notFoundUser = request(app)
+      .patch("/api/user/999/transactions/1")
+      .send(requestBody)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("NOT FOUND");
+      });
+    return Promise.all([notFoundTransaction, notFoundUser]);
+  });
+  it("PATCH:400 does not modify the transaction if specified user_id does not match", () => {
+    const requestBody = {
+      name: "?????",
+    };
+    return request(app)
+      .patch("/api/user/1/transactions/5")
+      .send(requestBody)
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("BAD REQUEST");

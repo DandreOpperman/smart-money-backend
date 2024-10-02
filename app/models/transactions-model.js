@@ -83,3 +83,36 @@ exports.insertTransaction = ({ name, cost, description, img_url }, user_id) => {
       return transaction;
     });
 };
+
+exports.updateTransaction = (patchBody, user_id, transaction_id) => {
+  const checkExists = [
+    checkValueExists("transactions", "transaction_id", transaction_id),
+    checkValueExists("users", "user_id", user_id),
+  ];
+  return Promise.all(checkExists)
+    .then(() => {
+      const queryParams = [];
+      const allowedColumns = ["name", "cost", "img_url", "description"];
+      let count = Object.keys(patchBody).length;
+      let queryStr = "UPDATE transactions SET ";
+      for (const key in patchBody) {
+        if (!allowedColumns.includes(key)) {
+          return Promise.reject({ status: 400, msg: "BAD REQUEST" });
+        }
+        const value = patchBody[key];
+        queryStr += `${key} = $${count + 2}`;
+        queryParams.unshift(value);
+        queryStr += count > 1 ? ", " : " ";
+        count--;
+      }
+      queryParams.unshift(user_id, transaction_id);
+      queryStr += `WHERE user_id = $1 AND transaction_id = $2 RETURNING *;`;
+      return db.query(queryStr, queryParams);
+    })
+    .then(({ rows: [transaction] }) => {
+      if (!transaction) {
+        return Promise.reject({ status: 400, msg: "BAD REQUEST" });
+      }
+      return transaction;
+    });
+};
