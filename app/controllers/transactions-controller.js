@@ -3,6 +3,7 @@ const {
   removeTransaction,
   removeAllTransactions,
   insertTransaction,
+  updateTransaction,
 } = require("../models/transactions-model");
 
 exports.getTransactions = (req, res, next) => {
@@ -38,6 +39,16 @@ exports.postTransaction = (req, res, next) => {
   insertTransaction(requestBody, user_id)
     .then((transaction) => {
       res.status(201).send({ transaction });
+    })
+    .catch((err) => next(err));
+};
+
+exports.patchTransaction = (req, res, next) => {
+  const requestBody = req.body;
+  const { user_id, transaction_id } = req.params;
+  updateTransaction(requestBody, user_id, transaction_id)
+    .then((transaction) => {
+      res.status(200).send({ transaction });
     })
     .catch((err) => next(err));
 };
