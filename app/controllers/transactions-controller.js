@@ -1,10 +1,32 @@
-const { selectTransactions } = require("../models/transactions-model");
+const {
+  selectTransactions,
+  removeTransaction,
+  removeAllTransactions,
+} = require("../models/transactions-model");
 
 exports.getTransactions = (req, res, next) => {
   const { user_id } = req.params;
   selectTransactions(user_id)
     .then((transactions) => {
       res.status(200).send({ transactions });
+    })
+    .catch((err) => next(err));
+};
+
+exports.deleteTransaction = (req, res, next) => {
+  const { user_id, transaction_id } = req.params;
+  removeTransaction(user_id, transaction_id)
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch((err) => next(err));
+};
+
+exports.deleteAllTransactions = (req, res, next) => {
+  const { user_id } = req.params;
+  removeAllTransactions(user_id)
+    .then(() => {
+      res.status(204).send();
     })
     .catch((err) => next(err));
 };

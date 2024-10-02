@@ -390,13 +390,94 @@ describe("/api/user/:user_id/transactions", () => {
         expect(msg).toBe("NOT FOUND");
       });
   });
-
   it("GET:200 responds with an empty array for a valid user with no transactions", () => {
     return request(app)
-      .get("/api/user/2/transactions")
+      .get("/api/user/3/transactions")
       .expect(200)
       .then(({ body: { transactions } }) => {
         expect(transactions).toEqual([]);
+      });
+  });
+  it("DELETE:204 deletes ALL transactions for a specified user", () => {
+    return request(app)
+      .delete("/api/user/1/transactions")
+      .expect(204)
+      .then(() => {
+        return request(app).get("/api/user/1/transactions").expect(200);
+      })
+      .then(({ body: { transactions } }) => {
+        expect(transactions).toEqual([]);
+      });
+  });
+  it("DELETE:204 only deletes transactions belonging to the user", () => {
+    return request(app)
+      .delete("/api/user/1/transactions")
+      .expect(204)
+      .then(() => {
+        return request(app)
+          .get("/api/user/2/transactions")
+          .expect(200)
+          .then(({ body: { transactions } }) => {
+            expect(transactions).toEqual([
+              {
+                transaction_id: 5,
+                name: "New Video Game",
+                cost: 59.99,
+                img_url: null,
+                created_at: "2024-09-30T09:34:02.500Z",
+                user_id: 2,
+              },
+            ]);
+          });
+      });
+  });
+  it("DELETE:400 responds with bad request for an invalid user_id", () => {
+    return request(app)
+      .delete("/api/user/qwerty/transactions")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+});
+
+describe("/api/user/:user_id/transactions/:transaction_id", () => {
+  it("DELETE:204 deletes the specified transaction for a user", () => {
+    return request(app)
+      .delete("/api/user/1/transactions/3")
+      .expect(204)
+      .then(() => {
+        return request(app).get("/api/user/1/transactions").expect(200);
+      })
+      .then(({ body: { transactions } }) => {
+        expect(transactions.length).toBe(3);
+        transactions.forEach((transaction) => {
+          expect(transaction.name).not.toBe("Gucci Socks");
+        });
+      });
+  });
+  it("DELETE:400 responds with bad request for invalid transaction_id", () => {
+    return request(app)
+      .delete("/api/user/1/transactions/notanid")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+  it("DELETE:400 responds with bad request for invalid user_id", () => {
+    return request(app)
+      .delete("/api/user/notanid/transactions/2")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+  it("DELETE:400 should not delete a transaction if it does not belong to the specified user_id", () => {
+    return request(app)
+      .delete("/api/user/3/transactions/1")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
       });
   });
 });

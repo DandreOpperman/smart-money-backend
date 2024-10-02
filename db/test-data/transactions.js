@@ -29,4 +29,10 @@ module.exports = [
     created_at: 1727688842500,
     description: "I got the smoked salmon.",
   },
+  {
+    user_id: 2,
+    name: "New Video Game",
+    cost: 59.99,
+    created_at: 1727688842500,
+  },
 ];
