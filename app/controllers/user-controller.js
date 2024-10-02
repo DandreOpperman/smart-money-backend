@@ -33,7 +33,7 @@ exports.patchUser = (req, res, next) => {
 exports.deleteUser = (req, res, next) => {
   const { user_id } = req.params;
   removeUser(user_id)
-    .then((user) => {
+    .then(() => {
       res.status(204).send();
     })
     .catch((err) => {

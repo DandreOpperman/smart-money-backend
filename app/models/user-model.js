@@ -1,5 +1,7 @@
 const db = require("../../db/connection");
-const { checkEmail, checkValueExists } = require("../../db/utils");
+const { removeAllGoals } = require("./goals-model");
+const { removeAllTransactions } = require("./transactions-model");
+const { checkValueExists } = require("../../db/utils");
 
 exports.selectUser = (user_id) => {
   const queryPromises = [];
@@ -150,11 +152,38 @@ exports.updateUser = (user_id, patchBody) => {
 };
 
 exports.removeUser = (user_id) => {
-  return db.query(
-    `
+  return removeAllGoals(user_id)
+    .then(() => {
+      return db.query(
+        //replace this with removeAllTags
+        `
+    DELETE FROM transactions_tags TT
+    USING transactions TR
+    WHERE TT.transaction_id = TR.transaction_id
+    AND TR.user_id = $1;
+    `,
+        [user_id]
+      );
+    })
+    .then(() => {
+      return removeAllTransactions(user_id);
+    })
+    .then(() => {
+      return db.query(
+        //replace this with removeAllExpenses
+        `
+    DELETE FROM monthly_expenses
+    WHERE user_id = $1;`,
+        [user_id]
+      );
+    })
+    .then(() => {
+      return db.query(
+        `
     DELETE FROM users
     WHERE user_id = $1;
     `,
-    [user_id]
-  );
+        [user_id]
+      );
+    });
 };

@@ -183,6 +183,23 @@ describe("/api/user/:user_id", () => {
         expect(msg).toBe("NOT FOUND");
       });
   });
+  it("DELETE:204 also deletes all of a user's associated data (expenses, transactions, tags, goals)", () => {
+    return request(app)
+      .delete("/api/user/1")
+      .expect(204)
+      .then(() => {
+        return request(app).get("/api/user/1").expect(404);
+      })
+      .then(() => {
+        return request(app).get("/api/user/1/transactions").expect(404);
+      })
+      .then(() => {
+        return request(app).get("/api/user/1/expenses").expect(404);
+      })
+      .then(() => {
+        return request(app).get("/api/user/1/goals").expect(404);
+      });
+  });
   it("DELETE:400 responds with bad request for an invalid user_id", () => {
     return request(app)
       .delete("/api/user/imnotarealuser")
@@ -774,10 +791,48 @@ describe("/api/user/:user_id/goals", () => {
   });
   it("GET:200 responds with an empty array for a valid user with no goals", () => {
     return request(app)
-      .get("/api/user/3/goals")
+      .get("/api/user/2/goals")
       .expect(200)
       .then(({ body: { goals } }) => {
         expect(goals).toEqual([]);
+      });
+  });
+  it("DELETE:204 deletes ALL goals for a specified user", () => {
+    return request(app)
+      .delete("/api/user/1/goals")
+      .expect(204)
+      .then(() => {
+        return request(app).get("/api/user/1/goals").expect(200);
+      })
+      .then(({ body: { goals } }) => {
+        expect(goals).toEqual([]);
+      });
+  });
+  it("DELETE:204 only deletes goals belonging to the user", () => {
+    return request(app)
+      .delete("/api/user/1/goals")
+      .expect(204)
+      .then(() => {
+        return request(app)
+          .get("/api/user/3/goals")
+          .expect(200)
+          .then(({ body: { goals } }) => {
+            expect(goals[0]).toMatchObject({
+              goal_id: 4,
+              name: "Theatre Tickets x2",
+              cost: 79.99,
+              created_at: expect.any(String),
+              user_id: 3,
+            });
+          });
+      });
+  });
+  it("DELETE:400 responds with bad request for an invalid user_id", () => {
+    return request(app)
+      .delete("/api/user/qwerty/goals")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
       });
   });
   it("POST:201 adds a new goal for the user", () => {
@@ -880,6 +935,47 @@ describe("/api/user/:user_id/goals", () => {
       .expect(404)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("NOT FOUND");
+      });
+  });
+});
+
+describe("/api/user/:user_id/goals/:goal_id", () => {
+  it("DELETE:204 deletes the specified goal for a user", () => {
+    return request(app)
+      .delete("/api/user/1/goals/1")
+      .expect(204)
+      .then(() => {
+        return request(app).get("/api/user/1/goals").expect(200);
+      })
+      .then(({ body: { goals } }) => {
+        expect(goals.length).toBe(2);
+        goals.forEach((goals) => {
+          expect(goals.name).not.toBe("Japan Trip");
+        });
+      });
+  });
+  it("DELETE:400 responds with bad request for invalid goal_id", () => {
+    return request(app)
+      .delete("/api/user/1/goals/notanid")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+  it("DELETE:400 responds with bad request for invalid user_id", () => {
+    return request(app)
+      .delete("/api/user/notanid/goals/2")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+  it("DELETE:400 should not delete a goal if it does not belong to the specified user_id", () => {
+    return request(app)
+      .delete("/api/user/3/goals/1")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
       });
   });
 });
