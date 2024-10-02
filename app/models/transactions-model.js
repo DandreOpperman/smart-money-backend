@@ -67,3 +67,19 @@ exports.removeAllTransactions = (user_id) => {
       );
     });
 };
+
+exports.insertTransaction = ({ name, cost, description, img_url }, user_id) => {
+  return db
+    .query(
+      `
+    INSERT INTO transactions
+        (name, cost, description, img_url, user_id)
+    VALUES
+        ($1, $2, $3, $4, $5)
+    RETURNING *;`,
+      [name, cost, description, img_url, user_id]
+    )
+    .then(({ rows: [transaction] }) => {
+      return transaction;
+    });
+};

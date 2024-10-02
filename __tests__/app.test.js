@@ -439,6 +439,113 @@ describe("/api/user/:user_id/transactions", () => {
         expect(msg).toBe("BAD REQUEST");
       });
   });
+  it("POST:201 adds a new transaction for the user", () => {
+    const requestBody = {
+      name: "Chocolate",
+      cost: 2.5,
+    };
+    return request(app)
+      .post("/api/user/3/transactions")
+      .send(requestBody)
+      .expect(201)
+      .then(({ body: { transaction } }) => {
+        expect(transaction).toMatchObject({
+          transaction_id: expect.any(Number),
+          name: "Chocolate",
+          cost: 2.5,
+          created_at: expect.any(String),
+          user_id: 3,
+        });
+      });
+  });
+  it("POST:201 optionally add an img_url or description", () => {
+    const requestBody = {
+      name: "Boba",
+      cost: 4.5,
+      img_url:
+        "https://www.anediblemosaic.com/wp-content/uploads//2022/03/boba-milk-tea-featured-image.jpg",
+      description: "I tried a new place!",
+    };
+    return request(app)
+      .post("/api/user/3/transactions")
+      .send(requestBody)
+      .expect(201)
+      .then(({ body: { transaction } }) => {
+        console.log(transaction);
+        expect(transaction).toMatchObject({
+          transaction_id: expect.any(Number),
+          name: "Boba",
+          cost: 4.5,
+          created_at: expect.any(String),
+          img_url:
+            "https://www.anediblemosaic.com/wp-content/uploads//2022/03/boba-milk-tea-featured-image.jpg",
+          description: "I tried a new place!",
+          user_id: 3,
+        });
+      });
+  });
+  it("POST:201 ignore extra data on the request body", () => {
+    const requestBody = {
+      name: "Coffee",
+      cost: 6.5,
+      description: "They're so expensive nowadays...",
+      emotion: "angry, frustrated, caffeinated",
+    };
+    return request(app)
+      .post("/api/user/3/transactions")
+      .send(requestBody)
+      .expect(201)
+      .then(({ body: { transaction } }) => {
+        expect(transaction).not.toHaveProperty("emotion");
+        expect(transaction).toMatchObject({
+          transaction_id: expect.any(Number),
+          name: "Coffee",
+          cost: 6.5,
+          created_at: expect.any(String),
+          description: "They're so expensive nowadays...",
+          user_id: 3,
+        });
+      });
+  });
+  it("POST:400 responds with bad request when sending invalid data types", () => {
+    const requestBody = {
+      name: "Magazine",
+      cost: "5 pounds",
+    };
+    return request(app)
+      .post("/api/user/3/transactions")
+      .send(requestBody)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+  it("POST:400 responds with bad request for invalid user_id", () => {
+    const requestBody = {
+      name: "Magazine",
+      cost: 5.0,
+    };
+    return request(app)
+      .post("/api/user/u29/transactions")
+      .send(requestBody)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+  it("POST:404 responds with not found if user does not exist", () => {
+    const requestBody = {
+      name: "Magazine",
+      cost: 5.0,
+    };
+    return request(app)
+      .post("/api/user/5/transactions")
+      .send(requestBody)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("NOT FOUND");
+      });
+  });
 });
 
 describe("/api/user/:user_id/transactions/:transaction_id", () => {
