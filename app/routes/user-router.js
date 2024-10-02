@@ -1,5 +1,6 @@
 const userRouter = require("express").Router();
 const transactionsRouter = require("./transactions-router");
+const goalsRouter = require("./goals-router");
 const {
   getUser,
   postUser,
@@ -9,6 +10,7 @@ const {
 const { getExpenses } = require("../controllers/expenses-controller");
 
 userRouter.use("/:user_id/transactions", transactionsRouter);
+userRouter.use("/:user_id/goals", goalsRouter);
 
 userRouter.post("/", postUser);
 userRouter.patch("/:user_id", patchUser);

@@ -2,11 +2,20 @@ const format = require("pg-format");
 const db = require("../connection");
 const { convertTimestampToDate } = require("../utils");
 
-const seed = ({ userData, monthlyExpenseData, transactionData, tagData }) => {
+const seed = ({
+  userData,
+  monthlyExpenseData,
+  transactionData,
+  tagData,
+  goalData,
+}) => {
   return db
     .query(`DROP TABLE IF EXISTS transactions_tags;`)
     .then(() => {
       return db.query(`DROP TABLE IF EXISTS transactions;`);
+    })
+    .then(() => {
+      return db.query(`DROP TABLE IF EXISTS goals;`);
     })
     .then(() => {
       return db.query(`DROP TABLE IF EXISTS monthly_expenses;`);
@@ -58,6 +67,18 @@ const seed = ({ userData, monthlyExpenseData, transactionData, tagData }) => {
         transaction_tag_id SERIAL PRIMARY KEY,
         tag_name VARCHAR(40),
         transaction_id INT REFERENCES transactions(transaction_id) NOT NULL
+      );`);
+    })
+    .then(() => {
+      return db.query(`
+      CREATE TABLE goals (
+        goal_id SERIAL PRIMARY KEY,
+        name VARCHAR(40) NOT NULL,
+        cost FLOAT NOT NULL,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        img_url VARCHAR(300),
+        description VARCHAR(500),
+        user_id INT REFERENCES users(user_id) NOT NULL
       );`);
     })
     .then(() => {
@@ -130,6 +151,23 @@ const seed = ({ userData, monthlyExpenseData, transactionData, tagData }) => {
         ])
       );
       return db.query(insertTransactionsTagsQueryStr);
+    })
+    .then(() => {
+      const formattedGoalData = goalData.map(convertTimestampToDate);
+      const insertGoalsQueryStr = format(
+        "INSERT INTO goals (user_id, name, cost, created_at, img_url, description) VALUES %L;",
+        formattedGoalData.map(
+          ({ user_id, name, cost, created_at, img_url, description }) => [
+            user_id,
+            name,
+            cost,
+            created_at,
+            img_url,
+            description,
+          ]
+        )
+      );
+      return db.query(insertGoalsQueryStr);
     });
 };
 
