@@ -200,5 +200,25 @@
         }
       ]
     }
+  },
+  "POST /api/user/:user_id/goals": {
+    "description": "add a new goal for the specified user",
+    "request-body": {
+      "name": "Theatre Tickets x2",
+      "cost": 79.99,
+      "img_url (OPTIONAL)": "testurl.net",
+      "description (OPTIONAL)": "SIX the musical"
+    },
+    "exampleResponse": {
+      "goal": {
+        "goal_id": 4,
+        "name": "Theatre Tickets x2",
+        "cost": 79.99,
+        "created_at": "2024-10-03T14:00:00.00TZ",
+        "img_url": "testurl.net",
+        "description": "SIX the musical",
+        "user_id": 3
+      }
+    }
   }
 }

@@ -780,4 +780,106 @@ describe("/api/user/:user_id/goals", () => {
         expect(goals).toEqual([]);
       });
   });
+  it("POST:201 adds a new goal for the user", () => {
+    const requestBody = {
+      name: "Theatre Tickets x2",
+      cost: 79.99,
+    };
+    return request(app)
+      .post("/api/user/3/goals")
+      .send(requestBody)
+      .expect(201)
+      .then(({ body: { goal } }) => {
+        expect(goal).toMatchObject({
+          goal_id: expect.any(Number),
+          name: "Theatre Tickets x2",
+          cost: 79.99,
+          created_at: expect.any(String),
+          user_id: 3,
+        });
+      });
+  });
+  it("POST:201 optionally add an img_url or description", () => {
+    const requestBody = {
+      name: "Theatre Tickets x2",
+      cost: 79.99,
+      img_url: "testurl.net",
+      description: "SIX the musical",
+    };
+    return request(app)
+      .post("/api/user/3/goals")
+      .send(requestBody)
+      .expect(201)
+      .then(({ body: { goal } }) => {
+        expect(goal).toMatchObject({
+          goal_id: expect.any(Number),
+          name: "Theatre Tickets x2",
+          cost: 79.99,
+          created_at: expect.any(String),
+          img_url: "testurl.net",
+          description: "SIX the musical",
+          user_id: 3,
+        });
+      });
+  });
+  it("POST:201 ignore extra data on the request body", () => {
+    const requestBody = {
+      name: "Theatre Tickets x2",
+      cost: 79.99,
+      banana: true,
+    };
+    return request(app)
+      .post("/api/user/3/goals")
+      .send(requestBody)
+      .expect(201)
+      .then(({ body: { goal } }) => {
+        expect(goal).not.toHaveProperty("banana");
+        expect(goal).toMatchObject({
+          goal_id: expect.any(Number),
+          name: "Theatre Tickets x2",
+          cost: 79.99,
+          created_at: expect.any(String),
+          user_id: 3,
+        });
+      });
+  });
+  it("POST:400 responds with bad request when sending invalid data types", () => {
+    const requestBody = {
+      name: "Theatre Tickets x2",
+      cost: "80 quid",
+    };
+    return request(app)
+      .post("/api/user/3/goals")
+      .send(requestBody)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+  it("POST:400 responds with bad request for invalid user_id", () => {
+    const requestBody = {
+      name: "Theatre Tickets x2",
+      cost: 79.99,
+    };
+    return request(app)
+      .post("/api/user/u29/goals")
+      .send(requestBody)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+  it("POST:404 responds with not found if user does not exist", () => {
+    const requestBody = {
+      name: "Theatre Tickets x2",
+      cost: 79.99,
+    };
+    return request(app)
+      .post("/api/user/5/goals")
+      .send(requestBody)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("NOT FOUND");
+      });
+  });
 });
