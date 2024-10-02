@@ -33,7 +33,7 @@ const seed = ({ userData, monthlyExpenseData, transactionData, tagData }) => {
       return db.query(`
       CREATE TABLE monthly_expenses (
         monthly_expense_id SERIAL PRIMARY KEY,
-        expense_name VARCHAR(40) NOT NULL,
+        name VARCHAR(40) NOT NULL,
         cost FLOAT NOT NULL,
         user_id INT REFERENCES users(user_id) NOT NULL
       );`);
@@ -92,10 +92,10 @@ const seed = ({ userData, monthlyExpenseData, transactionData, tagData }) => {
     })
     .then(() => {
       const insertMonthlyExpensesQueryStr = format(
-        "INSERT INTO monthly_expenses (user_id, expense_name, cost) VALUES %L;",
-        monthlyExpenseData.map(({ user_id, expense_name, cost }) => [
+        "INSERT INTO monthly_expenses (user_id, name, cost) VALUES %L;",
+        monthlyExpenseData.map(({ user_id, name, cost }) => [
           user_id,
-          expense_name,
+          name,
           cost,
         ])
       );

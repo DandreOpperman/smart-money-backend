@@ -311,3 +311,46 @@ describe("/api/user", () => {
       });
   });
 });
+
+describe("/api/user/:user_id/expenses", () => {
+  it("GET:200 responds with an array of all of the users monthly expenses", () => {
+    return request(app)
+      .get("/api/user/1/expenses")
+      .expect(200)
+      .then(({ body: { expenses } }) => {
+        expenses.map((expense) => {
+          expect(expense).toMatchObject({
+            user_id: 1,
+            monthly_expense_id: expect.any(Number),
+            name: expect.any(String),
+            cost: expect.any(Number),
+          });
+        });
+      });
+  });
+  it("GET:200 responds with an empty array if user has no monthly expenses yet", () => {
+    return request(app)
+      .get("/api/user/2/expenses")
+      .expect(200)
+      .then(({ body: { expenses } }) => {
+        expect(Array.isArray(expenses)).toBe(true);
+        expect(expenses.length).toBe(0);
+      });
+  });
+  it("GET:404 sends an appropriate status and error message when given a valid but non-existent id ", () => {
+    return request(app)
+      .get("/api/user/999/expenses")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("NOT FOUND");
+      });
+  });
+  it("GET:400 sends an appropriate status and error message when given an invalid id", () => {
+    return request(app)
+      .get("/api/user/wljkfn/expenses")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+});
