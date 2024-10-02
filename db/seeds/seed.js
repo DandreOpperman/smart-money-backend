@@ -44,9 +44,10 @@ const seed = ({ userData, monthlyExpenseData, transactionData, tagData }) => {
       return db.query(`
       CREATE TABLE transactions (
         transaction_id SERIAL PRIMARY KEY,
-        expense_name VARCHAR(40) NOT NULL,
+        name VARCHAR(40) NOT NULL,
         cost FLOAT NOT NULL,
         created_at TIMESTAMPTZ DEFAULT NOW(),
+        img_url VARCHAR(300),
         description VARCHAR(500),
         user_id INT REFERENCES users(user_id) NOT NULL
       );`);
@@ -106,13 +107,14 @@ const seed = ({ userData, monthlyExpenseData, transactionData, tagData }) => {
         convertTimestampToDate
       );
       const insertTransactionQueryStr = format(
-        "INSERT INTO transactions (user_id, expense_name, cost, created_at, description) VALUES %L;",
+        "INSERT INTO transactions (user_id, name, cost, created_at, img_url, description) VALUES %L;",
         formattedTransactionData.map(
-          ({ user_id, expense_name, cost, created_at, description }) => [
+          ({ user_id, name, cost, created_at, img_url, description }) => [
             user_id,
-            expense_name,
+            name,
             cost,
             created_at,
+            img_url,
             description,
           ]
         )

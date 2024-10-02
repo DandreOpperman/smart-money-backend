@@ -311,3 +311,49 @@ describe("/api/user", () => {
       });
   });
 });
+
+describe("/api/user/:user_id/transactions", () => {
+  it("GET:200 responds with a list of transactions for the specified user", () => {
+    return request(app)
+      .get("/api/user/1/transactions")
+      .expect(200)
+      .then(({ body: { transactions } }) => {
+        expect(transactions.length).toBe(4);
+        transactions.forEach((transaction) => {
+          expect(transaction.description).toBe(undefined);
+          expect(transaction).toMatchObject({
+            transaction_id: expect.any(Number),
+            name: expect.any(String),
+            cost: expect.any(Number),
+            img_url: expect.toBeOneOf([expect.any(String), null]),
+            created_at: expect.any(String),
+            user_id: expect.any(Number),
+          });
+        });
+      });
+  });
+  it("GET:400 responds with bad request for an invalid user_id", () => {
+    return request(app)
+      .get("/api/user/fakeuser/transactions")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+  it("GET:404 responds with not found for a valid but non-existent user_id", () => {
+    return request(app)
+      .get("/api/user/999/transactions")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("NOT FOUND");
+      });
+  });
+  it("GET:200 responds with an empty array for a valid user with no transactions", () => {
+    return request(app)
+      .get("/api/user/2/transactions")
+      .expect(200)
+      .then(({ body: { transactions } }) => {
+        expect(transactions).toEqual([]);
+      });
+  });
+});
