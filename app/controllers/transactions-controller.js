@@ -2,6 +2,7 @@ const {
   selectTransactions,
   removeTransaction,
   removeAllTransactions,
+  insertTransaction,
 } = require("../models/transactions-model");
 
 exports.getTransactions = (req, res, next) => {
@@ -27,6 +28,16 @@ exports.deleteAllTransactions = (req, res, next) => {
   removeAllTransactions(user_id)
     .then(() => {
       res.status(204).send();
+    })
+    .catch((err) => next(err));
+};
+
+exports.postTransaction = (req, res, next) => {
+  const requestBody = req.body;
+  const { user_id } = req.params;
+  insertTransaction(requestBody, user_id)
+    .then((transaction) => {
+      res.status(201).send({ transaction });
     })
     .catch((err) => next(err));
 };

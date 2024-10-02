@@ -40,7 +40,6 @@
   },
   "PATCH /api/user/:user_id": {
     "description": "allows for the alteration of the user data",
-    "queries": [],
     "request-body": { "income": 3500, "fname": "Jimothy" },
     "exampleResponse": {
       "user": {
@@ -57,7 +56,6 @@
   },
   "DELETE /api/user/:user_id": {
     "description": "allows for the deletion of the user data",
-    "queries": [],
     "exampleResponse": { "status": 204 }
   },
   "GET /api/user/:user_id/expenses": {
@@ -124,14 +122,32 @@
       }
     ]
   },
+  "POST /api/user/:user_id/transactions": {
+    "description": "add a new transaction for the specified user",
+    "request-body": {
+      "name": "Chocolate",
+      "cost": 2.5,
+      "img_url (OPTIONAL)": "...url",
+      "description (OPTIONAL)": "...description"
+    },
+    "exampleResponse": {
+      "transaction": {
+        "transaction_id": 11,
+        "name": "Chocolate",
+        "cost": 2.5,
+        "created_at": "2024-10-02T13:57:59.202Z",
+        "img_url": "...url",
+        "description": "...description",
+        "user_id": 7
+      }
+    }
+  },
   "DELETE /api/user/:user_id/transactions": {
     "description": "delete ALL transactions belonging to a specified user",
-    "queries": [],
     "exampleResponse": [{ "status": 204 }]
   },
   "DELETE /api/user/:user_id/transactions/:transaction_id": {
     "description": "delete a single transaction",
-    "queries": [],
     "exampleResponse": [{ "status": 204 }]
   }
 }
