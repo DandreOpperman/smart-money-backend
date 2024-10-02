@@ -311,3 +311,25 @@ describe("/api/user", () => {
       });
   });
 });
+
+describe("/api/user/:user_id/transactions", () => {
+  it("GET:200 responds with a list of transactions for the specified user", () => {
+    return request(app)
+      .get("/api/user/1/transactions")
+      .expect(200)
+      .then(({ body: { transactions } }) => {
+        expect(transactions.length).toBe(4);
+        transactions.forEach((transaction) => {
+          expect(transaction.description).toBe(undefined);
+          expect(transaction).toMatchObject({
+            transaction_id: expect.any(Number),
+            name: expect.any(String),
+            cost: expect.any(Number),
+            img_url: expect.toBeOneOf([expect.any(String), null]),
+            created_at: expect.any(String),
+            user_id: expect.any(Number),
+          });
+        });
+      });
+  });
+});

@@ -12,8 +12,14 @@
   },
   "devDependencies": {
     "jest": "^29.7.0",
+    "jest-extended": "^4.0.2",
     "nodemon": "^3.1.7",
     "supertest": "^7.0.0"
+  },
+  "jest": {
+    "setupFilesAfterEnv": [
+      "jest-extended/all"
+    ]
   },
   "scripts": {
     "test": "jest",
