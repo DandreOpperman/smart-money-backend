@@ -183,6 +183,23 @@ describe("/api/user/:user_id", () => {
         expect(msg).toBe("NOT FOUND");
       });
   });
+  it.only("DELETE:204 also deletes all of a user's associated data (expenses, transactions, tags, goals)", () => {
+    return request(app)
+      .delete("/api/user/1")
+      .expect(204)
+      .then(() => {
+        return request(app).get("/api/user/1").expect(404);
+      })
+      .then(() => {
+        return request(app).get("/api/user/1/transactions").expect(404);
+      })
+      .then(() => {
+        return request(app).get("/api/user/1/expenses").expect(404);
+      })
+      .then(() => {
+        return request(app).get("/api/user/1/goals").expect(404);
+      });
+  });
   it("DELETE:400 responds with bad request for an invalid user_id", () => {
     return request(app)
       .delete("/api/user/imnotarealuser")

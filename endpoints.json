@@ -55,7 +55,7 @@
     }
   },
   "DELETE /api/user/:user_id": {
-    "description": "allows for the deletion of the user data",
+    "description": "allows for the deletion of the user AND ALL ASSOCIATED DATA (goals, tags, expenses, transactions)",
     "exampleResponse": { "status": 204 }
   },
   "GET /api/user/:user_id/expenses": {
