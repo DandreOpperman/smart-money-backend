@@ -1,4 +1,8 @@
-const { selectGoals, insertGoal } = require("../models/goals-model");
+const {
+  selectGoals,
+  insertGoal,
+  removeAllGoals,
+} = require("../models/goals-model");
 
 exports.getGoals = (req, res, next) => {
   const { user_id } = req.params;
@@ -19,4 +23,13 @@ exports.postGoal = (req, res, next) => {
     .catch((err) => {
       next(err);
     });
+};
+
+exports.deleteAllGoals = (req, res, next) => {
+  const { user_id } = req.params;
+  removeAllGoals(user_id)
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch((err) => next(err));
 };

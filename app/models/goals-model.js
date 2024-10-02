@@ -32,3 +32,12 @@ exports.insertGoal = ({ name, cost, description, img_url }, user_id) => {
       return goal;
     });
 };
+
+exports.removeAllGoals = (user_id) => {
+  return db.query(
+    `
+    DELETE FROM goals
+    WHERE user_id = $1;`,
+    [user_id]
+  );
+};

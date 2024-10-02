@@ -27,4 +27,10 @@ module.exports = [
     created_at: 1727698932592,
     description: "Chanel Coco Mademoiselle.",
   },
+  {
+    user_id: 3,
+    name: "Theatre Tickets x2",
+    cost: 79.99,
+    created_at: 1727698932592,
+  },
 ];
