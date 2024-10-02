@@ -142,6 +142,20 @@
       }
     }
   },
+  "GET /api/user/:user_id/transactions/:transaction_id": {
+    "description": "returns all of the information about a single transaction",
+    "exampleResponse": [
+      {
+        "transaction_id": 1,
+        "name": "Wall St. Journal",
+        "cost": 3.99,
+        "img_url": "https://www.washingtonpost.com/wp-apps/imrs.php?src=https://arc-anglerfish-washpost-prod-washpost.s3.amazonaws.com/public/MJKQU2PDDLLYUK4PND234F32O4.jpg&w=1200",
+        "created_at": "2024-09-30 10:33:56.086+01",
+        "description": "A very important magazine for my career development.",
+        "user_id": 1
+      }
+    ]
+  },
   "PATCH /api/user/:user_id/transactions/:transaction_id": {
     "description": "update an existing transaction",
     "request-body": {

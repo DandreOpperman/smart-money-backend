@@ -548,6 +548,53 @@ describe("/api/user/:user_id/transactions", () => {
 });
 
 describe("/api/user/:user_id/transactions/:transaction_id", () => {
+  it("GET:200 returns a single transaction by its id", () => {
+    return request(app)
+      .get("/api/user/1/transactions/1")
+      .expect(200)
+      .then(({ body: { transaction } }) => {
+        expect(transaction).toMatchObject({
+          transaction_id: 1,
+          name: "Wall St. Journal",
+          cost: 3.99,
+          img_url:
+            "https://www.washingtonpost.com/wp-apps/imrs.php?src=https://arc-anglerfish-washpost-prod-washpost.s3.amazonaws.com/public/MJKQU2PDDLLYUK4PND234F32O4.jpg&w=1200",
+          description: "A very important magazine for my career development.",
+          created_at: expect.any(String),
+          user_id: 1,
+        });
+      });
+  });
+  it("GET:400 responds with bad request for invalid transaction/user id", () => {
+    const badUserID = request(app)
+      .get("/api/user/--/transactions/4")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+    const badTransactionID = request(app)
+      .get("/api/user/1/transactions/--")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+    return Promise.all([badUserID, badTransactionID]);
+  });
+  it("GET:404 responds with not found if user/transaction id does not exist", () => {
+    const notFoundTransaction = request(app)
+      .get("/api/user/1/transactions/999")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("NOT FOUND");
+      });
+    const notFoundUser = request(app)
+      .get("/api/user/999/transactions/1")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("NOT FOUND");
+      });
+    return Promise.all([notFoundTransaction, notFoundUser]);
+  });
   it("DELETE:204 deletes the specified transaction for a user", () => {
     return request(app)
       .delete("/api/user/1/transactions/3")
@@ -584,6 +631,19 @@ describe("/api/user/:user_id/transactions/:transaction_id", () => {
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("BAD REQUEST");
+        return request(app).get("/api/user/1/transactions/1");
+      })
+      .then(({ body: { transaction } }) => {
+        expect(transaction).toMatchObject({
+          transaction_id: 1,
+          name: "Wall St. Journal",
+          cost: 3.99,
+          img_url:
+            "https://www.washingtonpost.com/wp-apps/imrs.php?src=https://arc-anglerfish-washpost-prod-washpost.s3.amazonaws.com/public/MJKQU2PDDLLYUK4PND234F32O4.jpg&w=1200",
+          description: "A very important magazine for my career development.",
+          created_at: expect.any(String),
+          user_id: 1,
+        });
       });
   });
   it("PATCH:200 updates existing properties on a transaction", () => {

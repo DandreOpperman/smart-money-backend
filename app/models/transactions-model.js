@@ -1,6 +1,26 @@
 const db = require("../../db/connection");
 const { checkValueExists } = require("../../db/utils");
 
+exports.selectTransaction = (user_id, transaction_id) => {
+  const checkExists = [
+    checkValueExists("users", "user_id", user_id),
+    checkValueExists("transactions", "transaction_id", transaction_id),
+  ];
+  return Promise.all(checkExists)
+    .then(() => {
+      return db.query(
+        `
+    SELECT transaction_id, name, cost, img_url, created_at, user_id, description
+    FROM transactions 
+    WHERE user_id = $1 AND transaction_id = $2;`,
+        [user_id, transaction_id]
+      );
+    })
+    .then(({ rows: [transaction] }) => {
+      return transaction;
+    });
+};
+
 exports.selectTransactions = (user_id) => {
   return checkValueExists("users", "user_id", user_id)
     .then(() => {
