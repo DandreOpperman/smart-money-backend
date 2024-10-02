@@ -1,7 +1,7 @@
 const db = require("../../db/connection");
 const { removeAllGoals } = require("./goals-model");
 const { removeAllTransactions } = require("./transactions-model");
-const { checkEmail, checkValueExists } = require("../../db/utils");
+const { checkValueExists } = require("../../db/utils");
 
 exports.selectUser = (user_id) => {
   const queryPromises = [];

@@ -224,5 +224,9 @@
   "DELETE /api/user/:user_id/goals": {
     "description": "delete ALL goals belonging to a specified user",
     "exampleResponse": [{ "status": 204 }]
+  },
+  "DELETE /api/user/:user_id/goals/:goal_id": {
+    "description": "delete a single goal",
+    "exampleResponse": [{ "status": 204 }]
   }
 }

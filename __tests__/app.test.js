@@ -183,7 +183,7 @@ describe("/api/user/:user_id", () => {
         expect(msg).toBe("NOT FOUND");
       });
   });
-  it.only("DELETE:204 also deletes all of a user's associated data (expenses, transactions, tags, goals)", () => {
+  it("DELETE:204 also deletes all of a user's associated data (expenses, transactions, tags, goals)", () => {
     return request(app)
       .delete("/api/user/1")
       .expect(204)
@@ -935,6 +935,47 @@ describe("/api/user/:user_id/goals", () => {
       .expect(404)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("NOT FOUND");
+      });
+  });
+});
+
+describe("/api/user/:user_id/goals/:goal_id", () => {
+  it("DELETE:204 deletes the specified goal for a user", () => {
+    return request(app)
+      .delete("/api/user/1/goals/1")
+      .expect(204)
+      .then(() => {
+        return request(app).get("/api/user/1/goals").expect(200);
+      })
+      .then(({ body: { goals } }) => {
+        expect(goals.length).toBe(2);
+        goals.forEach((goals) => {
+          expect(goals.name).not.toBe("Japan Trip");
+        });
+      });
+  });
+  it("DELETE:400 responds with bad request for invalid goal_id", () => {
+    return request(app)
+      .delete("/api/user/1/goals/notanid")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+  it("DELETE:400 responds with bad request for invalid user_id", () => {
+    return request(app)
+      .delete("/api/user/notanid/goals/2")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+  it("DELETE:400 should not delete a goal if it does not belong to the specified user_id", () => {
+    return request(app)
+      .delete("/api/user/3/goals/1")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
       });
   });
 });

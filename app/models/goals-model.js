@@ -41,3 +41,26 @@ exports.removeAllGoals = (user_id) => {
     [user_id]
   );
 };
+
+exports.removeGoal = (user_id, goal_id) => {
+  return db
+    .query(
+      `
+    SELECT user_id FROM goals
+    WHERE goal_id = $1;`,
+      [goal_id]
+    )
+    .then(({ rows: [owner] }) => {
+      if (owner.user_id !== +user_id) {
+        return Promise.reject({ status: 400, msg: "BAD REQUEST" });
+      }
+    })
+    .then(() => {
+      return db.query(
+        `
+    DELETE FROM goals
+    WHERE user_id = $1 AND goal_id = $2;`,
+        [user_id, goal_id]
+      );
+    });
+};
