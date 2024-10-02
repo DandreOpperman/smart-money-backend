@@ -18,3 +18,26 @@ exports.selectExpenses = (user_id) => {
     return output;
   });
 };
+exports.insertExpense = (user_id, { name, cost }) => {
+  console.log(name, cost, user_id, "<--");
+  return checkValueExists("monthly_expenses", "name", name)
+    .catch(() => {
+      return db.query(
+        `
+      INSERT INTO monthly_expenses
+        (name, cost, user_id)
+      VALUES
+        ($1, $2, $3)
+      RETURNING *;
+      `,
+        [name, cost, user_id]
+      );
+    })
+    .then((result) => {
+      console.log(result);
+      if (!result) {
+        return Promise.reject({ status: 409, msg: "Expense already exists" });
+      }
+      const expense = result.rows[0];
+    });
+};

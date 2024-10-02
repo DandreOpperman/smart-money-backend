@@ -352,6 +352,23 @@ describe("/api/user/:user_id/expenses", () => {
         expect(msg).toBe("BAD REQUEST");
       });
   });
+  it("POST:201 responds with the newly created expense", () => {
+    const requestBody = {
+      name: "rent",
+      cost: 500,
+    };
+    return request(app)
+      .post("/api/user/3/expenses")
+      .expect(201)
+      .send(requestBody)
+      .then(({ body: { expense } }) => {
+        expect(expense).toMatchObject({
+          user_id: 3,
+          name: "rent",
+          cost: 500,
+        });
+      });
+  });
 });
 
 describe("/api/user/:user_id/transactions", () => {
