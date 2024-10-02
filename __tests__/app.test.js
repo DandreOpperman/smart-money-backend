@@ -332,4 +332,28 @@ describe("/api/user/:user_id/transactions", () => {
         });
       });
   });
+  it("GET:400 responds with bad request for an invalid user_id", () => {
+    return request(app)
+      .get("/api/user/fakeuser/transactions")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+  it("GET:404 responds with not found for a valid but non-existent user_id", () => {
+    return request(app)
+      .get("/api/user/999/transactions")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("NOT FOUND");
+      });
+  });
+  it("GET:200 responds with an empty array for a valid user with no transactions", () => {
+    return request(app)
+      .get("/api/user/2/transactions")
+      .expect(200)
+      .then(({ body: { transactions } }) => {
+        expect(transactions).toEqual([]);
+      });
+  });
 });
