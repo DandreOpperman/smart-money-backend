@@ -1,10 +1,20 @@
 const {
+  selectTransaction,
   selectTransactions,
   removeTransaction,
   removeAllTransactions,
   insertTransaction,
   updateTransaction,
 } = require("../models/transactions-model");
+
+exports.getTransaction = (req, res, next) => {
+  const { user_id, transaction_id } = req.params;
+  selectTransaction(user_id, transaction_id)
+    .then((transaction) => {
+      res.status(200).send({ transaction });
+    })
+    .catch((err) => next(err));
+};
 
 exports.getTransactions = (req, res, next) => {
   const { user_id } = req.params;
