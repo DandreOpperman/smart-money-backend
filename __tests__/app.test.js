@@ -343,13 +343,16 @@ describe("/api/user/:user_id/expenses", () => {
       .then(({ body: { msg } }) => {
         expect(msg).toBe("NOT FOUND");
       });
-    
+  });
   it("GET:400 sends an appropriate status and error message when given an invalid id", () => {
     return request(app)
       .get("/api/user/wljkfn/expenses")
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("BAD REQUEST");
+      });
+  });
+});
 
 describe("/api/user/:user_id/transactions", () => {
   it("GET:200 responds with a list of transactions for the specified user", () => {
