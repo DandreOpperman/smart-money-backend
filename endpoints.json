@@ -2,8 +2,8 @@
   "GET /api": {
     "description": "serves up a json representation of all the available endpoints of the api"
   },
-  "GET /api/login/:email": {
-    "description": "responds with user_id for a specified email",
+  "POST /api/login": {
+    "description": "responds with user_id for a correct email/pass combination",
     "exampleResponse": {
       "user_id": 1
     }

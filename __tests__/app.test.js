@@ -33,29 +33,31 @@ describe("/api", () => {
   });
 });
 
-describe("/api/login/:email", () => {
-  it("GET:200 responds with the user_id matching the specified email", () => {
+describe("/api/login", () => {
+  it("POST:200 responds with the user_id if supplied correct email and password", () => {
+    const loginAttempt = {
+      email: "jimmy4000@gmail.com",
+      password: "I@mrich3rthanu",
+    };
     return request(app)
-      .get("/api/login/jimmy4000@gmail.com")
+      .post("/api/login")
+      .send(loginAttempt)
       .expect(200)
       .then(({ body: { user_id } }) => {
         expect(user_id).toBe(1);
       });
   });
-  it("GET:400 responds with bad request for an invalid email", () => {
+  it("POST:400 responds with bad request if password is incorrect", () => {
+    const loginAttempt = {
+      email: "jimmy4000@gmail.com",
+      password: "guessthepassword",
+    };
     return request(app)
-      .get("/api/login/jimmy4000@gmail")
+      .post("/api/login")
+      .send(loginAttempt)
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("BAD REQUEST");
-      });
-  });
-  it("GET:404 responds with not found if email does not match a user", () => {
-    return request(app)
-      .get("/api/login/jimmy4000@gmail.net")
-      .expect(404)
-      .then(({ body: { msg } }) => {
-        expect(msg).toBe("NOT FOUND");
       });
   });
 });
