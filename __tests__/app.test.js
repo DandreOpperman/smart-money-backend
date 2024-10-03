@@ -370,6 +370,191 @@ describe("/api/user/:user_id/expenses", () => {
         expect(msg).toBe("BAD REQUEST");
       });
   });
+  it("POST:201 responds with the newly created expense, and ignores additional properties", () => {
+    const requestBody = {
+      name: "rent",
+      faveMeal: "turky burger",
+      cost: 500,
+      faveMeal: "turky burger",
+    };
+    return request(app)
+      .post("/api/user/3/expenses")
+      .expect(201)
+      .send(requestBody)
+      .then(({ body: { expense } }) => {
+        expect(expense).toMatchObject({
+          user_id: 3,
+          name: "rent",
+          cost: 500,
+        });
+      });
+  });
+  it("POST:409 responds with appropriate error message if expense already exists", () => {
+    const requestBody = {
+      name: "rent",
+      cost: 500,
+    };
+    return request(app)
+      .post("/api/user/1/expenses")
+      .expect(409)
+      .send(requestBody)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("ALREADY EXISTS");
+      });
+  });
+  it("POST:400 sends an appropriate status and error message when given an invalid id", () => {
+    const requestBody = {
+      name: "rent",
+      cost: 500,
+    };
+    return request(app)
+      .post("/api/user/wljkfn/expenses")
+      .expect(400)
+      .send(requestBody)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+  it("POST:400 responds with appropriate error message if bad request body", () => {
+    const requestBody = {
+      email: "marki55@gmail.com",
+      password: "Jwisper5$",
+      fname: "Marko",
+      banana: true,
+      giveMoney: "yes",
+      income: 10000000000,
+    };
+    return request(app)
+      .post("/api/user/1/expenses")
+      .expect(400)
+      .send(requestBody)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+  it("POST:404 sends an appropriate status and error message when given a valid but non-existant user_id", () => {
+    const requestBody = {
+      name: "rent",
+      cost: 500,
+    };
+    return request(app)
+      .post("/api/user/999/expenses")
+      .expect(404)
+      .send(requestBody)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("NOT FOUND");
+      });
+  });
+});
+describe("api/user/:user_id/expenses/:monthly_expense_id", () => {
+  it("PATCH:201 responds with the edited expense", () => {
+    const newCost = { cost: 400 };
+    return request(app)
+      .patch("/api/user/1/expenses/1")
+      .send(newCost)
+      .expect(201)
+      .then(
+        ({
+          body: {
+            expense: { cost },
+          },
+        }) => {
+          expect(cost).toBe(400);
+        }
+      );
+  });
+  it("PATCH:201 responds with the edited user when the patch request contains multiple values", () => {
+    const newCost = { name: "house rent", cost: 500 };
+    return request(app)
+      .patch("/api//user/1/expenses/1")
+      .send(newCost)
+      .expect(201)
+      .then(
+        ({
+          body: {
+            expense: { name, cost },
+          },
+        }) => {
+          expect(name).toBe("house rent");
+          expect(cost).toBe(500);
+        }
+      );
+  });
+  it("PATCH:400 responds with bad request if patch value is invalid", () => {
+    const badCost = { cost: "five hundred" };
+    return request(app)
+      .patch("/api//user/1/expenses/1")
+      .send(badCost)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+  it("PATCH:400 responds with bad request when passed multiple invalid values", () => {
+    const requestBody = {
+      cost: "notanemailaddress.net",
+      name: 12345,
+    };
+    return request(app)
+      .patch("/api/user/1/expenses/1")
+      .expect(400)
+      .send(requestBody)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+  it("PATCH:400 responds with bad request when passed an invalid property", () => {
+    const requestBody = {
+      shoeSize: 9,
+      email: "shoeKing@outlook.com",
+    };
+    return request(app)
+      .patch("/api/user/1/expenses/1")
+      .send(requestBody)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+  it("PATCH:404 responds with not found when passed a non existent monthly_expenses_id", () => {
+    const requestBody = {
+      cost: 700,
+    };
+    return request(app)
+      .patch("/api/user/1/expenses/999999")
+      .expect(404)
+      .send(requestBody)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("NOT FOUND");
+      });
+  });
+  it("DELETE:204 deletes the specified expense", () => {
+    return request(app)
+      .delete("/api/user/1/expenses/6")
+      .expect(204)
+      .then(() => {
+        return request(app).get("/api/user/1/expenses");
+      })
+      .then(({ body: { expenses } }) => {
+        expect(expenses.length).toBe(5);
+      });
+  });
+  it("DELETE:404 sends an appropriate status and error message when given a valid but non-existent comment_id", () => {
+    return request(app)
+      .delete("/api/user/1/expenses/999")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("NOT FOUND");
+      });
+  });
+  it("DELETE:400 sends an appropriate status and error message when given an invalid comment_id", () => {
+    return request(app)
+      .delete("/api/user/1/expenses/password")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
 });
 
 describe("/api/user/:user_id/transactions", () => {
