@@ -450,7 +450,7 @@ describe("api/user/:user_id/expenses/:monthly_expense_id", () => {
   it("PATCH:201 responds with the edited expense", () => {
     const newCost = { cost: 400 };
     return request(app)
-      .patch("/api/user/1/expenses/1")
+      .patch("/api/user/1/expenses/2")
       .send(newCost)
       .expect(201)
       .then(

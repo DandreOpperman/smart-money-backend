@@ -43,7 +43,6 @@ exports.insertExpense = (user_id, { name, cost }) => {
 };
 
 exports.updateExpense = (monthly_expense_id, patchBody) => {
-  console.log(monthly_expense_id, "<-id", patchBody, "<-patchBody");
   const queryProms = [];
   const queryParams = [];
   const allowedColumns = ["cost", "name"];
@@ -72,7 +71,6 @@ exports.updateExpense = (monthly_expense_id, patchBody) => {
       monthly_expense_id
     )
   );
-  console.log(queryStr);
   return Promise.all(queryProms).then(
     ([
       {
