@@ -1,27 +1,31 @@
 module.exports = [
   {
     transaction_id: 1,
-    tag_name: 'Education',
+    tag_name: "Education",
     //color?
   },
   {
     transaction_id: 1,
-    tag_name: 'Entertainment',
+    tag_name: "Entertainment",
   },
   {
     transaction_id: 2,
-    tag_name: 'Leisure',
+    tag_name: "Leisure",
   },
   {
     transaction_id: 3,
-    tag_name: 'Clothing',
+    tag_name: "Clothing",
   },
   {
     transaction_id: 4,
-    tag_name: 'Eating out',
+    tag_name: "Eating out",
   },
   {
     transaction_id: 4,
-    tag_name: 'Social',
+    tag_name: "Social",
+  },
+  {
+    transaction_id: 5,
+    tag_name: "Test Tag",
   },
 ];
