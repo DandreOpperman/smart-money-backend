@@ -100,6 +100,37 @@
       }
     ]
   },
+  "POST /api/user/:user_id/expenses": {
+    "description": "posts a monthly expense to the monthly expenses",
+    "queries": [],
+    "exampleResponse": [
+      {
+        "monthly_expense_id": 1,
+        "expense_name": "rent",
+        "cost": 300,
+        "user_id": 1
+      }
+    ]
+  },
+  "PATCH api/user/:user_id/expenses/:monthly_expense_id": {
+    "description": "update an existing expense",
+    "request-body": {
+      "name": "rent",
+      "cost": 400
+    },
+    "exampleResponse": {
+      "expense": {
+        "monthly_expense_id": 7,
+        "name": "rent",
+        "cost": 400,
+        "user_id": 1
+      }
+    }
+  },
+  "DELETE /api/user/:user_id/expenses/:monthly_expense_id": {
+    "description": "delete a specific expenses belonging to a specified user",
+    "exampleResponse": [{ "status": 204 }]
+  },
   "GET /api/user/:user_id/transactions": {
     "description": "returns a list of the user's transactions",
     "queries": [],
