@@ -2,6 +2,12 @@
   "GET /api": {
     "description": "serves up a json representation of all the available endpoints of the api"
   },
+  "GET /api/login/:email": {
+    "description": "responds with user_id for a specified email",
+    "exampleResponse": {
+      "user_id": 1
+    }
+  },
   "GET /api/user/:user_id": {
     "description": "serves the data for a specified user",
     "queries": [],
