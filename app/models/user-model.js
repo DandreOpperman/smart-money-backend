@@ -91,64 +91,57 @@ exports.insertUser = ({ email, password, fname }) => {
 };
 
 exports.updateUser = (user_id, patchBody) => {
-  const queryProms = [];
-  const queryParams = [];
-  const allowedColumns = [
-    "email",
-    "password",
-    "avatar_url",
-    "fname",
-    "income",
-    "savings_target",
-  ];
-  if (Object.keys(patchBody).includes("email")) {
-    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
-    if (!emailRegex.test(patchBody.email)) {
-      return Promise.reject({ status: 400, msg: "BAD REQUEST" });
-    }
-  }
-  if (Object.keys(patchBody).includes("password")) {
-    const passRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$£!%*?&])[A-Za-z\d@$£!%*?&]{8,}$/;
-    if (!passRegex.test(patchBody.password)) {
-      return Promise.reject({ status: 400, msg: "BAD REQUEST" });
-    }
-  }
-  if (Object.keys(patchBody).includes("fname")) {
-    const nameRegex = /^[A-Za-z]+([ -][A-Za-z]+)?$/;
-    if (!nameRegex.test(patchBody.fname)) {
-      return Promise.reject({ status: 400, msg: "BAD REQUEST" });
-    }
-  }
-  let count = Object.keys(patchBody).length;
-  let queryStr = "UPDATE users SET ";
+  return checkValueExists("users", "user_id", user_id)
+    .then(() => {
+      const queryParams = [];
+      const allowedColumns = [
+        "email",
+        "password",
+        "avatar_url",
+        "fname",
+        "income",
+        "savings_target",
+      ];
 
-  for (const key in patchBody) {
-    if (!allowedColumns.includes(key)) {
-      return Promise.reject({ status: 400, msg: "BAD REQUEST" });
-    }
-    const value = patchBody[key];
-    queryStr += `${key} = $${count + 1}`;
-    queryParams.unshift(value);
-    queryStr += count > 1 ? ", " : " ";
-    count--;
-  }
+      const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+      const passRegex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$£!%*?&])[A-Za-z\d@$£!%*?&]{8,}$/;
+      const nameRegex = /^[A-Za-z]+([ -][A-Za-z]+)?$/;
 
-  queryParams.unshift(user_id);
+      const validateRegex = [emailRegex, passRegex, nameRegex];
+      const propsToValidate = ["email", "password", "fname"];
 
-  queryStr += `WHERE user_id = $1 RETURNING *;`;
-  queryProms.push(db.query(queryStr, queryParams));
-  queryProms.push(checkValueExists("users", "user_id", user_id));
+      for (let [index, prop] of propsToValidate.entries()) {
+        if (Object.keys(patchBody).includes(prop)) {
+          if (!validateRegex[index].test(patchBody[prop])) {
+            return Promise.reject({ status: 400, msg: "BAD REQUEST" });
+          }
+        }
+      }
 
-  return Promise.all(queryProms).then(
-    ([
-      {
-        rows: [user],
-      },
-    ]) => {
+      let count = Object.keys(patchBody).length;
+      let queryStr = "UPDATE users SET ";
+
+      for (const key in patchBody) {
+        if (!allowedColumns.includes(key)) {
+          return Promise.reject({ status: 400, msg: "BAD REQUEST" });
+        }
+        const value = patchBody[key];
+        key === "password"
+          ? (queryStr += `password = crypt($${count + 1}, gen_salt('md5'))`)
+          : (queryStr += `${key} = $${count + 1}`);
+        queryParams.unshift(value);
+        queryStr += count > 1 ? ", " : " ";
+        count--;
+      }
+
+      queryParams.unshift(user_id);
+      queryStr += `WHERE user_id = $1 RETURNING *;`;
+      return db.query(queryStr, queryParams);
+    })
+    .then(({ rows: [user] }) => {
       return user;
-    }
-  );
+    });
 };
 
 exports.removeUser = (user_id) => {

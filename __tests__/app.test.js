@@ -201,6 +201,20 @@ describe("/api/user/:user_id", () => {
         expect(msg).toBe("NOT FOUND");
       });
   });
+  it("PATCH:201 if patching password, this must be stored as a hash", () => {
+    const requestBody = {
+      fname: "James",
+      password: "Password123%",
+    };
+    return request(app)
+      .patch("/api/user/1")
+      .send(requestBody)
+      .expect(201)
+      .then(({ body: { user } }) => {
+        expect(user.fname).toBe("James");
+        expect(user.password).not.toBe("Password123%");
+      });
+  });
   it("DELETE:204 deletes the specified user", () => {
     return request(app)
       .delete("/api/user/3")
