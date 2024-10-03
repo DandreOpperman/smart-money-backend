@@ -131,7 +131,7 @@ describe("/api/user/:user_id", () => {
         }) => {
           expect(email).toBe("bigmac@gmail.com");
           expect(income).toBe(9999);
-          expect(password).toBe("H0oD3ini£");
+          expect(typeof password).toBe("string");
         }
       );
   });
@@ -254,7 +254,7 @@ describe("/api/user", () => {
         expect(user).toMatchObject({
           user_id: 4,
           email: "markimoo55@gmail.com",
-          password: "Jwisper5$",
+          password: expect.any(String),
           fname: "Mark",
           income: 0,
           savings_target: 0,
@@ -294,7 +294,7 @@ describe("/api/user", () => {
         expect(user).toMatchObject({
           user_id: 4,
           email: "marki55@gmail.com",
-          password: "Jwisper5$",
+          password: expect.any(String),
           fname: "Marko",
           income: 0,
           savings_target: 0,

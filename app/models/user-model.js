@@ -74,7 +74,7 @@ exports.insertUser = ({ email, password, fname }) => {
     INSERT INTO users
       (email, password, fname)
     VALUES
-      ($1, $2, $3)
+      ($1, crypt($2, gen_salt('md5')), $3)
     RETURNING *;
     `,
         [email, password, fname]
