@@ -24,3 +24,30 @@ exports.checkValueExists = (table_name, column_name, value) => {
     }
   });
 };
+exports.checkValueTaken = (table_name, column_name, value, user_id) => {
+  queryParams = [column_name, table_name];
+  queryArgs = [];
+  let queryStr = `SELECT %I FROM %I WHERE`;
+  if (value) {
+    queryStr += ` %I = $1 AND`;
+    queryParams.push(column_name);
+    queryStr += " user_id = $2;";
+    queryParams.push(user_id);
+    queryArgs.push(value);
+    queryArgs.push(user_id);
+  } else {
+    queryStr += " user_id = $1;";
+    queryParams.push(user_id);
+    queryArgs.push(user_id);
+  }
+
+  const formattedQueryStr = format(queryStr, ...queryParams);
+  return db.query(formattedQueryStr, queryArgs).then(({ rows }) => {
+    if (rows.length) {
+      return Promise.reject({
+        status: 409,
+        msg: `ALREADY EXISTS`,
+      });
+    }
+  });
+};

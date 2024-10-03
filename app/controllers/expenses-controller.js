@@ -1,4 +1,9 @@
-const { selectExpenses, insertExpense } = require("../models/expenses-model");
+const {
+  selectExpenses,
+  insertExpense,
+  updateExpense,
+  removeExpense,
+} = require("../models/expenses-model");
 
 exports.getExpenses = (req, res, next) => {
   const { user_id } = req.params;
@@ -16,4 +21,23 @@ exports.postExpenses = (req, res, next) => {
       res.status(201).send({ expense });
     })
     .catch((err) => next(err));
+};
+exports.patchExpenses = (req, res, next) => {
+  const patchBody = req.body;
+  const { monthly_expenses_id } = req.params;
+  updateExpense(monthly_expenses_id, patchBody)
+    .then((expense) => {
+      res.status(201).send({ expense });
+    })
+    .catch((err) => next(err));
+};
+exports.deleteExpense = (req, res, next) => {
+  const { monthly_expenses_id } = req.params;
+  removeExpense(monthly_expenses_id)
+    .then((expense) => {
+      res.status(204).send();
+    })
+    .catch((err) => {
+      next(err);
+    });
 };

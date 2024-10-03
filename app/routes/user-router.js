@@ -6,18 +6,14 @@ const {
   patchUser,
   deleteUser,
 } = require("../controllers/user-controller");
-const {
-  getExpenses,
-  postExpenses,
-} = require("../controllers/expenses-controller");
+const expensesRouter = require("./expenses-router");
 
 userRouter.use("/:user_id/transactions", transactionsRouter);
+userRouter.use("/:user_id/expenses", expensesRouter);
 
 userRouter.post("/", postUser);
 userRouter.patch("/:user_id", patchUser);
 userRouter.delete("/:user_id", deleteUser);
 userRouter.get("/:user_id", getUser);
-userRouter.get("/:user_id/expenses", getExpenses);
-userRouter.post("/:user_id/expenses", postExpenses);
 
 module.exports = userRouter;
