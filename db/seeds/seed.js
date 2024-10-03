@@ -10,7 +10,10 @@ const seed = ({
   goalData,
 }) => {
   return db
-    .query(`DROP TABLE IF EXISTS transactions_tags;`)
+    .query(`DROP EXTENSION IF EXISTS pgcrypto CASCADE;`)
+    .then(() => {
+      return db.query(`DROP TABLE IF EXISTS transactions_tags;`);
+    })
     .then(() => {
       return db.query(`DROP TABLE IF EXISTS transactions;`);
     })
@@ -22,9 +25,6 @@ const seed = ({
     })
     .then(() => {
       return db.query(`DROP TABLE IF EXISTS users;`);
-    })
-    .then(() => {
-      return db.query(`DROP EXTENSION pgcrypto;`);
     })
     .then(() => {
       return db.query(`CREATE EXTENSION pgcrypto;`);
