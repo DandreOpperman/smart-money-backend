@@ -10,6 +10,7 @@ const {
   goalData,
 } = require("../db/test-data/index");
 const endpointsData = require("../endpoints.json");
+const { jwtDecode } = require("jwt-decode");
 
 beforeEach(() =>
   seed({ userData, monthlyExpenseData, transactionData, tagData, goalData })
@@ -34,7 +35,7 @@ describe("/api", () => {
 });
 
 describe("/api/login", () => {
-  it("POST:200 responds with the user_id if supplied correct email and password", () => {
+  it("POST:200 responds with a JWT (JSON Web Token) if supplied correct email and password", () => {
     const loginAttempt = {
       email: "jimmy4000@gmail.com",
       password: "I@mrich3rthanu",
@@ -43,8 +44,12 @@ describe("/api/login", () => {
       .post("/api/login")
       .send(loginAttempt)
       .expect(200)
-      .then(({ body: { user_id } }) => {
-        expect(user_id).toBe(1);
+      .then(({ body: { token } }) => {
+        expect(jwtDecode(token)).toMatchObject({
+          user_id: 1,
+          iat: expect.any(Number),
+          exp: expect.any(Number),
+        });
       });
   });
   it("POST:400 responds with bad request if password is incorrect", () => {
