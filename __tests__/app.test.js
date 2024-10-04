@@ -65,6 +65,54 @@ describe("/api/login", () => {
         expect(msg).toBe("BAD REQUEST");
       });
   });
+  it("POST:400 responds with bad request if email or password is missing", () => {
+    const noPass = {
+      email: "jimmy4000@gmail.com",
+    };
+    const noEmail = {
+      password: "guessthepassword",
+    };
+    const noPassRequest = request(app)
+      .post("/api/login")
+      .send(noPass)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+    const noEmailRequest = request(app)
+      .post("/api/login")
+      .send(noEmail)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+    return Promise.all([noEmailRequest, noPassRequest]);
+  });
+  it("POST:404 responds with not found for valid but non-existent email", () => {
+    const loginAttempt = {
+      email: "testemail@pleaseignore.com",
+      password: "guessthepassword",
+    };
+    return request(app)
+      .post("/api/login")
+      .send(loginAttempt)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("NOT FOUND");
+      });
+  });
+  it("POST:400 rejects unexpected properties on the request body", () => {
+    const loginAttempt = {
+      banana: true,
+    };
+    return request(app)
+      .post("/api/login")
+      .send(loginAttempt)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
 });
 
 describe("/api/user/:user_id", () => {
