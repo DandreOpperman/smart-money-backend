@@ -46,7 +46,7 @@ describe("/api/login", () => {
       .expect(200)
       .then(({ body: { token } }) => {
         expect(jwtDecode(token)).toMatchObject({
-          user_id: 1,
+          user: expect.any(Object),
           iat: expect.any(Number),
           exp: expect.any(Number),
         });

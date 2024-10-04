@@ -15,12 +15,13 @@ exports.comparePass = (email, attemptPassword) => {
       }
       return db.query(
         `
-    SELECT user_id FROM users
+    SELECT user_id, email, avatar_url, fname, income, savings_target, created_at 
+    FROM users
     WHERE email = $1;`,
         [email]
       );
     })
-    .then(({ rows: [user_id] }) => {
-      return user_id;
+    .then(({ rows: [user] }) => {
+      return user;
     });
 };
