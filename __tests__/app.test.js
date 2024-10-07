@@ -38,7 +38,7 @@ describe("/api/login", () => {
   it("POST:200 responds with a JWT (JSON Web Token) if supplied correct email and password", () => {
     const loginAttempt = {
       email: "jimmy4000@gmail.com",
-      password: "I@mrich3rthanu",
+      password: "Password123@",
     };
     return request(app)
       .post("/api/login")
@@ -660,7 +660,7 @@ describe("/api/user/:user_id/transactions", () => {
       .get("/api/user/1/transactions")
       .expect(200)
       .then(({ body: { transactions } }) => {
-        expect(transactions.length).toBe(4);
+        expect(transactions.length).toBe(40);
         transactions.forEach((transaction) => {
           expect(transaction.description).toBe(undefined);
           expect(transaction).toMatchObject({
@@ -718,16 +718,14 @@ describe("/api/user/:user_id/transactions", () => {
           .get("/api/user/2/transactions")
           .expect(200)
           .then(({ body: { transactions } }) => {
-            expect(transactions).toEqual([
-              {
-                transaction_id: 5,
-                name: "New Video Game",
-                cost: 59.99,
-                img_url: null,
-                created_at: expect.any(String),
-                user_id: 2,
-              },
-            ]);
+            expect(transactions.length).toBe(1);
+            expect(transactions[0]).toMatchObject({
+              transaction_id: 4,
+              name: "Cooking Ingredients",
+              cost: 16.75,
+              created_at: expect.any(String),
+              user_id: 2,
+            });
           });
       });
   });
@@ -855,11 +853,9 @@ describe("/api/user/:user_id/transactions/:transaction_id", () => {
       .then(({ body: { transaction } }) => {
         expect(transaction).toMatchObject({
           transaction_id: 1,
-          name: "Wall St. Journal",
-          cost: 3.99,
-          img_url:
-            "https://www.washingtonpost.com/wp-apps/imrs.php?src=https://arc-anglerfish-washpost-prod-washpost.s3.amazonaws.com/public/MJKQU2PDDLLYUK4PND234F32O4.jpg&w=1200",
-          description: "A very important magazine for my career development.",
+          name: "Fitness Class",
+          cost: 12.0,
+          description: "Attended a yoga session.",
           created_at: expect.any(String),
           user_id: 1,
         });
@@ -903,7 +899,7 @@ describe("/api/user/:user_id/transactions/:transaction_id", () => {
         return request(app).get("/api/user/1/transactions").expect(200);
       })
       .then(({ body: { transactions } }) => {
-        expect(transactions.length).toBe(3);
+        expect(transactions.length).toBe(39);
         transactions.forEach((transaction) => {
           expect(transaction.name).not.toBe("Gucci Socks");
         });
@@ -936,11 +932,9 @@ describe("/api/user/:user_id/transactions/:transaction_id", () => {
       .then(({ body: { transaction } }) => {
         expect(transaction).toMatchObject({
           transaction_id: 1,
-          name: "Wall St. Journal",
-          cost: 3.99,
-          img_url:
-            "https://www.washingtonpost.com/wp-apps/imrs.php?src=https://arc-anglerfish-washpost-prod-washpost.s3.amazonaws.com/public/MJKQU2PDDLLYUK4PND234F32O4.jpg&w=1200",
-          description: "A very important magazine for my career development.",
+          name: "Fitness Class",
+          cost: 12,
+          description: "Attended a yoga session.",
           created_at: expect.any(String),
           user_id: 1,
         });
@@ -952,18 +946,18 @@ describe("/api/user/:user_id/transactions/:transaction_id", () => {
       cost: 45.0,
     };
     return request(app)
-      .patch("/api/user/1/transactions/4")
+      .patch("/api/user/2/transactions/4")
       .send(requestBody)
       .expect(200)
       .then(({ body: { transaction } }) => {
         expect(transaction).toMatchObject({
           transaction_id: 4,
-          name: "Meal with friends",
+          name: "Cooking Ingredients",
           cost: 45.0,
           created_at: expect.any(String),
           img_url: "smoked_salmon.jpg",
-          description: "I got the smoked salmon.",
-          user_id: 1,
+          description: "Bought spices and ingredients for dinner.",
+          user_id: 2,
         });
       });
   });
@@ -1026,7 +1020,7 @@ describe("/api/user/:user_id/transactions/:transaction_id", () => {
       name: "?????",
     };
     return request(app)
-      .patch("/api/user/1/transactions/5")
+      .patch("/api/user/1/transactions/4")
       .send(requestBody)
       .expect(400)
       .then(({ body: { msg } }) => {
@@ -1041,7 +1035,7 @@ describe("/api/user/:user_id/goals", () => {
       .get("/api/user/1/goals")
       .expect(200)
       .then(({ body: { goals } }) => {
-        expect(goals.length).toBe(3);
+        expect(goals.length).toBe(9);
         goals.forEach((goal) => {
           expect(goal).toMatchObject({
             goal_id: expect.any(Number),
@@ -1100,7 +1094,7 @@ describe("/api/user/:user_id/goals", () => {
           .expect(200)
           .then(({ body: { goals } }) => {
             expect(goals[0]).toMatchObject({
-              goal_id: 4,
+              goal_id: expect.any(Number),
               name: "Theatre Tickets x2",
               cost: 79.99,
               created_at: expect.any(String),

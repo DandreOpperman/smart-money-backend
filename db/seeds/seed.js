@@ -88,10 +88,10 @@ const seed = ({
       );`);
     })
     .then(() => {
-      const formattedUserData = userData.map(convertTimestampToDate);
+      // const formattedUserData = userData.map(convertTimestampToDate);
       const insertUsersQueryStr = format(
         "INSERT INTO users (email, password, fname, income, savings_target, created_at) VALUES %L;",
-        formattedUserData.map(
+        userData.map(
           ({ email, password, fname, income, savings_target, created_at }) => [
             email,
             password,
