@@ -92,5 +92,7 @@ module.exports = [
     name: "Theatre Tickets x2",
     cost: 79.99,
     created_at: 1727698932592,
+    description:
+      "New furniture for the living room, including a modern couch and coffee table for a cozy, stylish home.",
   },
 ];
