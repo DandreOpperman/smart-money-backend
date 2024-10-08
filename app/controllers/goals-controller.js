@@ -3,6 +3,7 @@ const {
   insertGoal,
   removeAllGoals,
   removeGoal,
+  updateGoal,
 } = require("../models/goals-model");
 
 exports.getGoals = (req, res, next) => {
@@ -40,6 +41,17 @@ exports.deleteGoal = (req, res, next) => {
   removeGoal(user_id, goal_id)
     .then(() => {
       res.status(204).send();
+    })
+    .catch((err) => next(err));
+};
+
+exports.patchGoal = (req, res, next) => {
+  const requestBody = req.body;
+  const { user_id, goal_id } = req.params;
+  
+  updateGoal(requestBody, user_id, goal_id)
+    .then((goal) => {
+      res.status(200).send({ goal });
     })
     .catch((err) => next(err));
 };

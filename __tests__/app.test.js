@@ -1213,6 +1213,95 @@ describe("/api/user/:user_id/goals", () => {
         expect(msg).toBe("NOT FOUND");
       });
   });
+  it("PATCH:200 updates existing properties on a goal", () => {
+    const requestBody = {
+      img_url: "smoked_salmon.jpg",
+      cost: 66.0,
+    };
+    return request(app)
+      .patch("/api/user/1/goals/1")
+      .send(requestBody)
+      .expect(200)
+      .then(({ body: { goal } }) => {
+       
+        expect(goal).toMatchObject({
+          goal_id: 1,
+          name: "New Fridge",
+          cost: 66.0,
+          created_at: expect.any(String),
+          img_url: "smoked_salmon.jpg",
+          description:
+            "One of those with the touchscreen that nobody ever uses.",
+          user_id: 1,
+        });
+      });
+  });
+  it("PATCH:400 responds with bad request if request property is not greenlisted", () => {
+    const requestBody = {
+      img_url: "smoked_salmon.jpg",
+      cost: 45.0,
+      user_id: 5,
+    };
+    return request(app)
+      .patch("/api/user/1/goals/4")
+      .send(requestBody)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+  });
+  it("PATCH:400 responds with bad request if user/goal id is invalid", () => {
+    const requestBody = {
+      description: "test description",
+    };
+    const badUserID = request(app)
+      .patch("/api/user/--/goals/4")
+      .send(requestBody)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+    const badgoalID = request(app)
+      .patch("/api/user/1/goals/--")
+      .send(requestBody)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("BAD REQUEST");
+      });
+    return Promise.all([badUserID, badgoalID]);
+  });
+  it("PATCH:404 responds with not found if user/goal id does not exist", () => {
+    const requestBody = {
+      cost: 57.49,
+    };
+    const notFoundgoal = request(app)
+      .patch("/api/user/1/goals/999")
+      .send(requestBody)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("NOT FOUND");
+      });
+    const notFoundUser = request(app)
+      .patch("/api/user/999/goals/1")
+      .send(requestBody)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("NOT FOUND");
+      });
+    return Promise.all([notFoundgoal, notFoundUser]);
+  });
+  // it.only("PATCH:400 does not modify the goal if specified user_id does not match", () => {
+  //   const requestBody = {
+  //     name: "?????",
+  //   };
+  //   return request(app)
+  //     .patch("/api/user/1/goals/10")
+  //     .send(requestBody)
+  //     .expect(400)
+  //     .then(({ body: { msg } }) => {
+  //       expect(msg).toBe("BAD REQUEST");
+  //     });
+  // });
 });
 
 describe("/api/user/:user_id/goals/:goal_id", () => {
