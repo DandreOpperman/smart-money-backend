@@ -1,5 +1,6 @@
 const {
   selectGoals,
+  selectGoal,
   insertGoal,
   removeAllGoals,
   removeGoal,
