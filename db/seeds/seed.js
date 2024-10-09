@@ -39,6 +39,7 @@ const seed = ({
         fname VARCHAR(40) NOT NULL,
         income FLOAT DEFAULT 0,
         savings_target FLOAT DEFAULT 0,
+        focus_goal INT DEFAULT 0,
         created_at TIMESTAMPTZ DEFAULT NOW()
       );`);
       // user_id	        email	        password	        fname	            income	        savings_goal	date_joined
