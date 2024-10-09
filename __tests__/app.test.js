@@ -45,6 +45,7 @@ describe("/api/login", () => {
       .send(loginAttempt)
       .expect(200)
       .then(({ body: { token } }) => {
+        console.log(jwtDecode(token));
         expect(jwtDecode(token)).toMatchObject({
           user: expect.any(Object),
           iat: expect.any(Number),
@@ -1223,7 +1224,6 @@ describe("/api/user/:user_id/goals", () => {
       .send(requestBody)
       .expect(200)
       .then(({ body: { goal } }) => {
-       
         expect(goal).toMatchObject({
           goal_id: 1,
           name: "New Fridge",

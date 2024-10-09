@@ -21,7 +21,7 @@ exports.comparePass = (email, attemptPassword) => {
           }
           return db.query(
             `
-    SELECT user_id, email, avatar_url, fname, income, savings_target, created_at 
+    SELECT user_id, email, avatar_url, fname, income, savings_target, created_at, focus_goal 
     FROM users
     WHERE email = $1;`,
             [email]
