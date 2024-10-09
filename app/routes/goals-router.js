@@ -5,6 +5,7 @@ const {
   deleteAllGoals,
   deleteGoal,
   patchGoal,
+  getGoal,
 } = require("../controllers/goals-controller");
 
 goalsRouter.get("/", getGoals);
