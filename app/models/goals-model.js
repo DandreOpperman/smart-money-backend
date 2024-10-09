@@ -18,6 +18,22 @@ exports.selectGoals = (user_id) => {
     });
 };
 
+exports.selectGoal = (user_id, goal_id) => {
+  return checkValueExists("users", "user_id", user_id)
+    .then(() => {
+      return db.query(
+        `
+    SELECT goal_id, name, cost, img_url, created_at, description, user_id 
+    FROM goals
+    WHERE user_id = $1 AND goal_id = $2;`,
+        [user_id, goal_id]
+      );
+    })
+    .then(({ rows }) => {
+      return rows;
+    });
+};
+
 exports.insertGoal = ({ name, cost, description, img_url }, user_id) => {
   return db
     .query(

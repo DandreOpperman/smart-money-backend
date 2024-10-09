@@ -15,6 +15,15 @@ exports.getGoals = (req, res, next) => {
     .catch((err) => next(err));
 };
 
+exports.getGoal = (req, res, next) => {
+  const { user_id, goal_id } = req.params;
+  selectGoal(user_id, goal_id)
+    .then((goals) => {
+      res.status(200).send({ goals });
+    })
+    .catch((err) => next(err));
+};
+
 exports.postGoal = (req, res, next) => {
   const { user_id } = req.params;
   const requestBody = req.body;

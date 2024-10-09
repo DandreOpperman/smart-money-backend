@@ -12,4 +12,5 @@ goalsRouter.post("/", postGoal);
 goalsRouter.delete("/", deleteAllGoals);
 goalsRouter.delete("/:goal_id", deleteGoal);
 goalsRouter.patch("/:goal_id",patchGoal);
+goalsRouter.get("/:goal_id",getGoal);
 module.exports = goalsRouter;
