@@ -16,6 +16,8 @@ The purpose of this API is accessing application data programmatically. The inte
 - Model view controller (MVC)
 - PostgreSQL
 - Fs/promises
+- Json webtoken
+- Password hashing (pg crypto)
 - Hosting using supabase for the tables and render for the API
 
 ### Access online
@@ -46,8 +48,6 @@ To interact with this api locally you will need to carry out the following instr
 - jest
 - jest extended
 - supertest
-- pg
-- pg-format
 - jjwt-decode
 
 5. initialise the database by running `npm run setup-db`
