@@ -101,6 +101,7 @@ exports.updateUser = (user_id, patchBody) => {
         "fname",
         "income",
         "savings_target",
+        "focus_goal",
       ];
 
       const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;

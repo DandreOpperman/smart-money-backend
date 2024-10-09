@@ -10,6 +10,7 @@ module.exports = [
     savings_target: 450, //monthly
     //mandatory_spend: 1000, //COUNT alias mandatory_spend join table with budget
     //disposable_spend: 1000,
+    focus_goal: 0,
     created_at: "2024-09-23 14:35:12+00",
   },
   {
@@ -22,6 +23,7 @@ module.exports = [
     income: 2100,
     savings_target: 800,
     created_at: "2024-09-23 14:35:12+00",
+    focus_goal: 0,
   },
   {
     //user_id: 3, <-- SERIAL
