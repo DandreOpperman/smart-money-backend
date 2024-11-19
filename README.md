@@ -5,7 +5,7 @@
 Thank you for taking the time to view our smartmoney API. This backend was created by Abdurahman Mohamud, Dandre Opperman, Ibrahim Ahmed, Joshua Roper, Justin Hill and Mark Harrison during a 2 week-long sprint (30-09-2024 to 11-10-2024) for our [Northcoders](https://northcoders.com) full stack software developer bootcamp.
 our contact details are listed at the bottom.
 
-The purpose of this API is accessing application data programmatically. The intention of this project was to mimic the building of a real world backend service, which provides information to the front end architecture of the smartmoneyapp which can be found here https://github.com/joshuatdr/smart-money-app. During the creation of this API we utilised the following skills:
+The purpose of this API is accessing application data programmatically. The intention of this project was to mimic the building of a real world backend service, which provides information to the front end architecture of the smartmoneyapp which can be found here https://github.com/smart-money-app/smart-money-app. During the creation of this API we utilised the following skills:
 
 - Javascript
 - Documentation
@@ -38,7 +38,7 @@ To interact with this api locally you will need to carry out the following instr
 
 3. Next in the root of the repository create a file called .env.test . In the .env.test file on line one type `PGDATABASE=smart_money_test`.
 
-4. next you will need to install the dependencies with following command: `git i` . Doing so will install these dependencies:
+4. next you will need to install the dependencies with following command: `npm install` . Doing so will install these dependencies:
 
 - cors
 - express
