@@ -50,7 +50,7 @@ To interact with this api locally you will need to carry out the following instr
 - supertest
 - jjwt-decode
 
-5. initialise the database by running `npm run setup-db`
+5. initialise the database by running `npm run setup-dbs`
 
 6. seed the database by running `npm run seed`
 
